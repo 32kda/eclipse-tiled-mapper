@@ -56,13 +56,17 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.Page;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import tiled.core.Map;
 import tiled.core.MapChangeListener;
 import tiled.core.MapChangedEvent;
 import tiled.core.MapLayer;
+import tiled.core.ObjectGroup;
+import tiled.core.TileLayer;
 import tiled.core.TileSet;
 
+import com.onpositive.mapper.MapperPlugin;
 import com.onpositive.mapper.actions.AddLayerAction;
 import com.onpositive.mapper.actions.AddObjectGroupAction;
 import com.onpositive.mapper.actions.CloneLayerAction;
@@ -89,6 +93,8 @@ public class LayerViewPage extends Page {
 	 * it and always show the same content 
 	 * (like Task List, for example).
 	 */
+	protected static Image tileLayerImg = AbstractUIPlugin.imageDescriptorFromPlugin(MapperPlugin.PLUGIN_ID,"icons/tile-grid.png").createImage();
+	protected static Image objectLayerImg = AbstractUIPlugin.imageDescriptorFromPlugin(MapperPlugin.PLUGIN_ID,"icons/objects.png").createImage();
 	
 	class ViewContentProvider implements IStructuredContentProvider, ICheckStateProvider, ICheckStateListener, ICellModifier {
 		protected Map map;
@@ -147,6 +153,10 @@ public class LayerViewPage extends Page {
 			return "";
 		}
 		public Image getColumnImage(Object obj, int index) {
+			if (obj instanceof TileLayer)
+				return tileLayerImg;
+			if (obj instanceof ObjectGroup)
+				return objectLayerImg;
 			return getImage(obj);
 		}
 		public Image getImage(Object obj) {

@@ -70,10 +70,12 @@ import tiled.util.Converter;
  */
 public class HexMapView extends MapView
 {
-    public static final int ALIGN_TOP = 1;
+	public static final int ALIGN_TOP = 1;
     public static final int ALIGN_BOTTOM = 2;
     public static final int ALIGN_RIGHT = 3;
     public static final int ALIGN_LEFT = 4;
+    
+    private static final int OBJECT_FOREGROUND = SWT.COLOR_GRAY;
 
     private static final double HEX_SLOPE = Math.tan(Math.toRadians(60));
 
@@ -724,7 +726,7 @@ public class HexMapView extends MapView
                 g.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
                 g.fillOval((int) ox + 1, (int) oy + 1,
                         (int) (10 * zoom), (int) (10 * zoom));
-                g.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_MAGENTA));
+                g.setBackground(Display.getDefault().getSystemColor(OBJECT_FOREGROUND));
                 g.fillOval((int) ox, (int) oy,
                         (int) (10 * zoom), (int) (10 * zoom));
             	g.setAntialias(SWT.OFF);
@@ -733,7 +735,7 @@ public class HexMapView extends MapView
                 g.drawRectangle((int) ox + 1, (int) oy + 1,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
-                g.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_MAGENTA));
+                g.setForeground(Display.getDefault().getSystemColor(OBJECT_FOREGROUND));
                 g.drawRectangle((int) ox, (int) oy,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));

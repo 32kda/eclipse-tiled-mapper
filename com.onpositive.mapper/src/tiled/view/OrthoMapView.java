@@ -44,6 +44,8 @@ public class OrthoMapView extends MapView
 	protected static final int SEL_HOVER_ALPHA = 50;
 	protected Polygon propPoly;
     protected Color selColor;
+    
+    private static final int OBJECT_FOREGROUND = SWT.COLOR_GRAY;
 
     /**
      * Creates a new orthographic map view that displays the specified map.
@@ -166,7 +168,7 @@ public class OrthoMapView extends MapView
                 gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
                 gc.fillOval((int) ox + 1, (int) oy + 1,
                         (int) (10 * zoom), (int) (10 * zoom));
-                gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_MAGENTA));
+                gc.setBackground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
                 gc.fillOval((int) ox, (int) oy,
                         (int) (10 * zoom), (int) (10 * zoom));
                 gc.setAntialias(SWT.OFF);
@@ -175,7 +177,7 @@ public class OrthoMapView extends MapView
                 gc.drawRectangle((int) ox + 1, (int) oy + 1,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
-                gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_MAGENTA));
+                gc.setForeground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
                 gc.drawRectangle((int) ox, (int) oy,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
@@ -184,7 +186,7 @@ public class OrthoMapView extends MapView
                 final String s = mo.getName() != null ? mo.getName() : "(null)";
                 gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
                 gc.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
-                gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_MAGENTA));
+                gc.setForeground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
                 gc.drawString(s, (int) (ox - 5), (int) (oy - 5));
             }
         }
