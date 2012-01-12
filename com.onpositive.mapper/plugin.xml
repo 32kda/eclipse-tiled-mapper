@@ -43,6 +43,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="com.onpositive.mapper.perspective.MapperPerspective"
+            icon="icons/tiled-icon-16.gif"
             id="com.onpositive.mapper.perspective"
             name="Tiled Map Editing ">
          <description>
@@ -61,6 +62,7 @@
             class="com.onpositive.mapper.newwizard.NewTMXWizard"
             finalPerspective="com.onpositive.mapper.perspective"
             hasPages="true"
+            icon="icons/tiled-icon-16.gif"
             id="com.onpositive.mapper.tmxwizard"
             name="New TMX file">
       </wizard>
