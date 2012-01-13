@@ -13,7 +13,6 @@
 package com.onpositive.mapper.actions;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 
@@ -68,7 +67,7 @@ public class MergeAllLayersAction extends AbstractLayerAction
     }
     
     @Override
-    public boolean calcEnabled(ISelection selection) {
+    public boolean calcEnabled() {
     	return editor.getMap().getTotalLayers() > 1;
     }
 }

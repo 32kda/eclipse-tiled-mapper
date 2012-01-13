@@ -12,7 +12,6 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 import tiled.core.Map;
@@ -47,7 +46,7 @@ public class MoveLayerDownAction extends AbstractLayerAction
     }
     
     @Override
-    public boolean calcEnabled(ISelection selection) {
-    	return super.calcEnabled(selection) && editor.getCurrentLayerIndex() > 0;
+    public boolean calcEnabled() {
+    	return super.calcEnabled() && editor.getCurrentLayerIndex() > 0;
     }
 }

@@ -126,7 +126,6 @@
                icon="icons/addobj-16.gif"
                id="com.onpositive.mapper.addObjAction"
                label="Add Object"
-               menubarPath="com.onpositive.mapper.mapMenu/group1"
                style="toggle"
                toolbarPath="additions">
          </action>
@@ -143,7 +142,6 @@
                icon="icons/object-move-16.png"
                id="com.onpositive.mapper.moveObjAction"
                label="Move Object"
-               menubarPath="com.onpositive.mapper.mapMenu/group1"
                style="toggle"
                toolbarPath="additions">
          </action>
@@ -152,9 +150,68 @@
                label="Map"
                path="additions">
             <separator
-                  name="group1">
+                  name="addGroup">
+            </separator>
+            <separator
+                  name="modifyGroup">
             </separator>
          </menu>
+         <action
+               class="com.onpositive.mapper.actions.AddLayerAction"
+               icon="icons/gnome-new.png"
+               id="com.onpositive.mapper.addLayer"
+               label="Add Layer"
+               menubarPath="com.onpositive.mapper.mapMenu/addGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.AddObjectGroupAction"
+               icon="icons/new-object-layer.png"
+               id="com.onpositive.mapper.addObjectGroup"
+               label="Add Object Group"
+               menubarPath="com.onpositive.mapper.mapMenu/addGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.MergeLayerDownAction"
+               icon="icons/stock-merge-down-16.png"
+               id="com.onpositive.mapper.mergeDown"
+               label="Merge Down"
+               menubarPath="com.onpositive.mapper.mapMenu/addGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.DeleteLayerAction"
+               icon="icons/gnome-delete.png"
+               id="com.onpositive.mapper.deleteLayer"
+               label="Delete Layer"
+               menubarPath="com.onpositive.mapper.mapMenu/addGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.MoveLayerUpAction"
+               icon="icons/gnome-up.png"
+               id="com.onpositive.mapper.moveUp"
+               label="Move Layer Up"
+               menubarPath="com.onpositive.mapper.mapMenu/modifyGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.MoveLayerDownAction"
+               icon="icons/gnome-down.png"
+               id="com.onpositive.mapper.moveDown"
+               label="Move Layer Down"
+               menubarPath="com.onpositive.mapper.mapMenu/modifyGroup"
+               style="push">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.CloneLayerAction"
+               icon="icons/layer-clone.png"
+               id="com.onpositive.mapper.cloneAction"
+               label="Clone Layer"
+               menubarPath="com.onpositive.mapper.mapMenu/modifyGroup"
+               style="push">
+         </action>
       </editorContribution>
    </extension>
    <extension

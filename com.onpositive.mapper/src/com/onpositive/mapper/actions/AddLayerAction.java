@@ -12,7 +12,6 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 import tiled.core.Map;
@@ -41,7 +40,7 @@ public class AddLayerAction extends AbstractLayerAction
     }
     
     @Override
-	public boolean calcEnabled(ISelection selection) {
+	public boolean calcEnabled() {
 		return true;
 	}
     

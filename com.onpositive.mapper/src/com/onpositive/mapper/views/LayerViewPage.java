@@ -371,13 +371,13 @@ public class LayerViewPage extends Page {
 			}
 		};
 		
-		moveUpAction = new LayerViewAction(new MoveLayerUpAction(),viewer, mapEditor,Resources.getString("action.layer.moveup.name"), Resources.getString("action.layer.moveup.tooltip"),Resources.getImageDescriptor("gnome-up.png"));
-		moveDownAction = new LayerViewAction(new MoveLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.movedown.name"), Resources.getString("action.layer.movedown.tooltip"),Resources.getImageDescriptor("gnome-down.png"));
-		mergeDownAction = new LayerViewAction(new MergeLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.mergedown.name"), Resources.getString("action.layer.mergedown.tooltip"),Resources.getImageDescriptor("stock-merge-down-16.png"));
-		addLayerAction = new LayerViewAction(new AddLayerAction(),viewer, mapEditor,Resources.getString("action.layer.add.name"), Resources.getString("action.layer.add.tooltip"),Resources.getImageDescriptor("gnome-new.png"));
-		addObjectGroupAction = new LayerViewAction(new AddObjectGroupAction(),viewer, mapEditor,Resources.getString("action.objectgroup.add.name"), Resources.getString("action.objectgroup.add.tooltip"),Resources.getImageDescriptor("new-object-layer.png"));
-		deleteLayerAction = new LayerViewAction(new DeleteLayerAction(),viewer, mapEditor,Resources.getString("action.layer.delete.name"), Resources.getString("action.layer.delete.tooltip"), Resources.getImageDescriptor("gnome-delete.png"));
-		cloneLayerAction = new LayerViewAction(new CloneLayerAction(),viewer, mapEditor,Resources.getString("action.layer.duplicate.name"), Resources.getString("action.layer.duplicate.tooltip"), Resources.getImageDescriptor("gimp-duplicate-16.png"));
+		moveUpAction = new LayerViewAction(new MoveLayerUpAction(),viewer, mapEditor,Resources.getString("action.layer.moveup.name"), Resources.getString("action.layer.moveup.tooltip"),Resources.getImageDescriptorFromPlugin("gnome-up.png"));
+		moveDownAction = new LayerViewAction(new MoveLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.movedown.name"), Resources.getString("action.layer.movedown.tooltip"),Resources.getImageDescriptorFromPlugin("gnome-down.png"));
+		mergeDownAction = new LayerViewAction(new MergeLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.mergedown.name"), Resources.getString("action.layer.mergedown.tooltip"),Resources.getImageDescriptorFromPlugin("stock-merge-down-16.png"));
+		addLayerAction = new LayerViewAction(new AddLayerAction(),viewer, mapEditor,Resources.getString("action.layer.add.name"), Resources.getString("action.layer.add.tooltip"),Resources.getImageDescriptorFromPlugin("gnome-new.png"));
+		addObjectGroupAction = new LayerViewAction(new AddObjectGroupAction(),viewer, mapEditor,Resources.getString("action.objectgroup.add.name"), Resources.getString("action.objectgroup.add.tooltip"),Resources.getImageDescriptorFromPlugin("new-object-layer.png"));
+		deleteLayerAction = new LayerViewAction(new DeleteLayerAction(),viewer, mapEditor,Resources.getString("action.layer.delete.name"), Resources.getString("action.layer.delete.tooltip"), Resources.getImageDescriptorFromPlugin("gnome-delete.png"));
+		cloneLayerAction = new LayerViewAction(new CloneLayerAction(),viewer, mapEditor,Resources.getString("action.layer.duplicate.name"), Resources.getString("action.layer.duplicate.tooltip"), Resources.getImageDescriptorFromPlugin("gimp-duplicate-16.png"));
 		
 	}
 

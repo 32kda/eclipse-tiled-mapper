@@ -18,7 +18,6 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.actions.SelectionProviderAction;
 
 import com.onpositive.mapper.editors.MapEditor;
@@ -54,10 +53,10 @@ public class LayerViewAction extends SelectionProviderAction
 			}
 		});
         setDescription(description);
-//        putValue(SHORT_DESCRIPTION, description);
-//        putValue(ACTION_COMMAND_KEY, name);
+        layerAction.setDescription(description);
+        layerAction.setText(name);
         layerAction.setActiveEditor(layerAction,editor);
-        setEnabled(layerAction.calcEnabled(new StructuredSelection()));
+        setEnabled(layerAction.calcEnabled());
     }
 
     public LayerViewAction(AbstractLayerAction layerAction, ISelectionProvider provider,
@@ -74,7 +73,7 @@ public class LayerViewAction extends SelectionProviderAction
     
     @Override
     public void selectionChanged(IStructuredSelection selection) {
-    	setEnabled(layerAction.calcEnabled(selection));
+    	setEnabled(layerAction.calcEnabled());
     }
     
 }

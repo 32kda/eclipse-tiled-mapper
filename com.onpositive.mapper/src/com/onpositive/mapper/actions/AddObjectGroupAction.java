@@ -12,7 +12,6 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelection;
 
 import tiled.core.Map;
 
@@ -37,7 +36,7 @@ public class AddObjectGroupAction extends AbstractLayerAction
     }
     
     @Override
-	public boolean calcEnabled(ISelection selection) {
+	public boolean calcEnabled() {
 		return true;
 	}
 }

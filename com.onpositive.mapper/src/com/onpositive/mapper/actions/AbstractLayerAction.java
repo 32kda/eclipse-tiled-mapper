@@ -8,7 +8,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 
@@ -25,8 +24,12 @@ public abstract class AbstractLayerAction extends Action implements
 		
 		@Override
 		public void propertyChange(PropertyChangeEvent event) {
-			if (event.getProperty().equals(MapEditor.CURRENT_LAYER_PROP))
-				setEnabled(calcEnabled(new StructuredSelection()));
+			if (event.getProperty().equals(MapEditor.CURRENT_LAYER_PROP)) {
+				boolean enabled = calcEnabled();
+				setEnabled(enabled);
+				if (action != null)
+					action.setEnabled(enabled);
+			}
 		}
 	};
 	
@@ -41,10 +44,10 @@ public abstract class AbstractLayerAction extends Action implements
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-		setEnabled(calcEnabled(selection));
+		setEnabled(calcEnabled());
 	}
 	
-    public boolean calcEnabled(ISelection selection) {
+    public boolean calcEnabled() {
     	return editor != null && editor.getCurrentLayerIndex() >= 0;
     }
 
