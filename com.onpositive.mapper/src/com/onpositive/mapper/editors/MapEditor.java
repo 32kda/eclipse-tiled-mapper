@@ -9,8 +9,6 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import javax.swing.JOptionPane;
-
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
@@ -22,6 +20,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -544,10 +543,9 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 				// Do a quick check to make sure the selection is not empty
 				if (brushLayer.isEmpty()) {
-					JOptionPane.showMessageDialog(null,
-							Resources.getString("dialog.selection.empty"),
-							Resources.getString("dialog.selection.empty"),
-							JOptionPane.WARNING_MESSAGE);
+					MessageDialog.openInformation(getSite().getShell(),
+					Resources.getString("dialog.selection.empty"),
+					Resources.getString("dialog.selection.empty"));
 				} else {
 					setBrush(new CustomBrush(brushLayer));
 					cursorHighlight.setOffset(tile.x - (int) bounds.width / 2,

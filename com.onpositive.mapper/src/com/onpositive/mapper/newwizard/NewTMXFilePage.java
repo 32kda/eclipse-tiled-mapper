@@ -171,12 +171,12 @@ public class NewTMXFilePage extends WizardNewFileCreationPage {
 		layoutData = new GridData(SWT.FILL,SWT.CENTER,false,false);
 		mapHeightCombo.setLayoutData(layoutData);
 		titleLabel = new Label(mapParamsComposite,SWT.NONE);
-		titleLabel.setText("Title width");
+		titleLabel.setText("Tile width");
 		tileWidthCombo = new Combo(editComposite,SWT.DROP_DOWN);
 		layoutData = new GridData(SWT.FILL,SWT.CENTER,false,false);
 		tileWidthCombo.setLayoutData(layoutData);
 		titleLabel = new Label(editComposite,SWT.NONE);
-		titleLabel.setText("Title height");
+		titleLabel.setText("Tile height");
 		tileHeightCombo = new Combo(editComposite,SWT.DROP_DOWN);
 		layoutData = new GridData(SWT.FILL,SWT.CENTER,false,false);
 		tileHeightCombo.setLayoutData(layoutData);
@@ -273,7 +273,7 @@ public class NewTMXFilePage extends WizardNewFileCreationPage {
 	}
 
 	protected void appendTilesets(Document newDoc, Element rootElement) {
-		List elements = tilesetsField.getElements();
+		List<?> elements = tilesetsField.getElements();
 		int gid = 1;
 		for (Object object : elements) {
 			TileSet tileSet = (TileSet) object;
