@@ -13,6 +13,7 @@
 package com.onpositive.mapper.actions;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 
@@ -31,11 +32,11 @@ import tiled.util.TileMergeHelper;
  */
 public class MergeAllLayersAction extends AbstractLayerAction
 {
-    public MergeAllLayersAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.mergeall.name"), Resources.getString("action.layer.mergeall.tooltip"));
-    }
+//    public MergeAllLayersAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.mergeall.name"), Resources.getString("action.layer.mergeall.tooltip"));
+//    }
 
     protected void doPerformAction() {
         Map map = editor.getMap();
@@ -67,7 +68,7 @@ public class MergeAllLayersAction extends AbstractLayerAction
     }
     
     @Override
-    public boolean calcEnabled() {
+    public boolean calcEnabled(ISelection selection) {
     	return editor.getMap().getTotalLayers() > 1;
     }
 }

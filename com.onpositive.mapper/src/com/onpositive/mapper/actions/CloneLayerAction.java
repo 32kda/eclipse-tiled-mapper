@@ -30,12 +30,12 @@ import tiled.mapeditor.resources.Resources;
  */
 public class CloneLayerAction extends AbstractLayerAction
 {
-    public CloneLayerAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.duplicate.name"),
-              Resources.getString("action.layer.duplicate.tooltip"), Resources.getImageDescriptor("gimp-duplicate-16.png"));
-    }
+//    public CloneLayerAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.duplicate.name"),
+//              Resources.getString("action.layer.duplicate.tooltip"), Resources.getImageDescriptor("gimp-duplicate-16.png"));
+//    }
 
     protected void doPerformAction() {
         MapLayer currentLayer = editor.getCurrentLayer();

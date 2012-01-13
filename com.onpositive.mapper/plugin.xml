@@ -126,6 +126,7 @@
                icon="icons/addobj-16.gif"
                id="com.onpositive.mapper.addObjAction"
                label="Add Object"
+               menubarPath="com.onpositive.mapper.mapMenu/group1"
                style="toggle"
                toolbarPath="additions">
          </action>
@@ -142,9 +143,18 @@
                icon="icons/object-move-16.png"
                id="com.onpositive.mapper.moveObjAction"
                label="Move Object"
+               menubarPath="com.onpositive.mapper.mapMenu/group1"
                style="toggle"
                toolbarPath="additions">
          </action>
+         <menu
+               id="com.onpositive.mapper.mapMenu"
+               label="Map"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
       </editorContribution>
    </extension>
    <extension

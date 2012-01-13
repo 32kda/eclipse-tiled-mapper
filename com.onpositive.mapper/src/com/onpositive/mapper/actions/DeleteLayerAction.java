@@ -26,12 +26,12 @@ import tiled.mapeditor.resources.Resources;
  */
 public class DeleteLayerAction extends AbstractLayerAction
 {
-    public DeleteLayerAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.delete.name"),
-              Resources.getString("action.layer.delete.tooltip"), Resources.getImageDescriptor("gnome-delete.png"));
-    }
+//    public DeleteLayerAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.delete.name"),
+//              Resources.getString("action.layer.delete.tooltip"), Resources.getImageDescriptor("gnome-delete.png"));
+//    }
 
     protected void doPerformAction() {
         Map map = editor.getMap();

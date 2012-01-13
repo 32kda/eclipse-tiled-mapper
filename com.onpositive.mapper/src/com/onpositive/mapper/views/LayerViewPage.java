@@ -57,8 +57,10 @@ import tiled.core.MapLayer;
 import tiled.core.ObjectGroup;
 import tiled.core.TileLayer;
 import tiled.core.TileSet;
+import tiled.mapeditor.resources.Resources;
 
 import com.onpositive.mapper.MapperPlugin;
+import com.onpositive.mapper.actions.LayerViewAction;
 import com.onpositive.mapper.actions.AddLayerAction;
 import com.onpositive.mapper.actions.AddObjectGroupAction;
 import com.onpositive.mapper.actions.CloneLayerAction;
@@ -164,13 +166,13 @@ public class LayerViewPage extends Page {
 
 	protected Map map;
 	protected MapEditor mapEditor;
-	protected MoveLayerUpAction moveUpAction;
-	protected MoveLayerDownAction moveDownAction;
-	protected MergeLayerDownAction mergeDownAction;
-	protected AddLayerAction addLayerAction;
-	protected AddObjectGroupAction addObjectGroupAction;
-	protected DeleteLayerAction deleteLayerAction;
-	protected CloneLayerAction cloneLayerAction;
+	protected LayerViewAction moveUpAction;
+	protected LayerViewAction moveDownAction;
+	protected LayerViewAction mergeDownAction;
+	protected LayerViewAction addLayerAction;
+	protected LayerViewAction addObjectGroupAction;
+	protected LayerViewAction deleteLayerAction;
+	protected LayerViewAction cloneLayerAction;
 	
 	public LayerViewPage(MapEditor mapEditor) {
 		super();
@@ -316,9 +318,9 @@ public class LayerViewPage extends Page {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
+//		manager.add(action1);
+//		manager.add(new Separator());
+//		manager.add(action2);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -369,13 +371,14 @@ public class LayerViewPage extends Page {
 			}
 		};
 		
-		moveUpAction = new MoveLayerUpAction(viewer, mapEditor);
-		moveDownAction = new MoveLayerDownAction(viewer, mapEditor);
-		mergeDownAction = new MergeLayerDownAction(viewer, mapEditor);
-		addLayerAction = new AddLayerAction(viewer, mapEditor);
-		addObjectGroupAction = new AddObjectGroupAction(viewer,mapEditor);
-		deleteLayerAction = new DeleteLayerAction(viewer, mapEditor);
-		cloneLayerAction = new CloneLayerAction(viewer, mapEditor);
+		moveUpAction = new LayerViewAction(new MoveLayerUpAction(),viewer, mapEditor,Resources.getString("action.layer.moveup.name"), Resources.getString("action.layer.moveup.tooltip"),Resources.getImageDescriptor("gnome-up.png"));
+		moveDownAction = new LayerViewAction(new MoveLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.movedown.name"), Resources.getString("action.layer.movedown.tooltip"),Resources.getImageDescriptor("gnome-down.png"));
+		mergeDownAction = new LayerViewAction(new MergeLayerDownAction(),viewer, mapEditor,Resources.getString("action.layer.mergedown.name"), Resources.getString("action.layer.mergedown.tooltip"),Resources.getImageDescriptor("stock-merge-down-16.png"));
+		addLayerAction = new LayerViewAction(new AddLayerAction(),viewer, mapEditor,Resources.getString("action.layer.add.name"), Resources.getString("action.layer.add.tooltip"),Resources.getImageDescriptor("gnome-new.png"));
+		addObjectGroupAction = new LayerViewAction(new AddObjectGroupAction(),viewer, mapEditor,Resources.getString("action.objectgroup.add.name"), Resources.getString("action.objectgroup.add.tooltip"),Resources.getImageDescriptor("new-object-layer.png"));
+		deleteLayerAction = new LayerViewAction(new DeleteLayerAction(),viewer, mapEditor,Resources.getString("action.layer.delete.name"), Resources.getString("action.layer.delete.tooltip"), Resources.getImageDescriptor("gnome-delete.png"));
+		cloneLayerAction = new LayerViewAction(new CloneLayerAction(),viewer, mapEditor,Resources.getString("action.layer.duplicate.name"), Resources.getString("action.layer.duplicate.tooltip"), Resources.getImageDescriptor("gimp-duplicate-16.png"));
+		
 	}
 
 //	private void hookDoubleClickAction() {

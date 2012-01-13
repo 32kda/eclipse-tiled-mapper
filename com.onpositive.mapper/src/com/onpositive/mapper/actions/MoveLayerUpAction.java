@@ -12,6 +12,7 @@
 
 package com.onpositive.mapper.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 import tiled.core.Map;
@@ -26,14 +27,14 @@ import com.onpositive.mapper.editors.MapEditor;
  */
 public class MoveLayerUpAction extends AbstractLayerAction
 {
-    public MoveLayerUpAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.moveup.name"),
-              Resources.getString("action.layer.moveup.tooltip"), Resources.getImageDescriptor("gnome-up.png"));
-
-//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_UP"));
-    }
+//    public MoveLayerUpAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.moveup.name"),
+//              Resources.getString("action.layer.moveup.tooltip"), Resources.getImageDescriptor("gnome-up.png"));
+//
+////        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_UP"));
+//    }
 
     protected void doPerformAction() {
         Map map = editor.getMap();
@@ -47,7 +48,7 @@ public class MoveLayerUpAction extends AbstractLayerAction
     }
     
     @Override
-    public boolean calcEnabled() {
-    	return super.calcEnabled() && editor.getMap().getTotalLayers() > 1;
+    public boolean calcEnabled(ISelection selection) {
+    	return super.calcEnabled(selection) && editor.getCurrentLayerIndex() < editor.getMap().getTotalLayers() - 1;
     }
 }

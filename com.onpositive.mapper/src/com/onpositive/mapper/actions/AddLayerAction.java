@@ -12,6 +12,7 @@
 
 package com.onpositive.mapper.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 import tiled.core.Map;
@@ -26,12 +27,12 @@ import com.onpositive.mapper.editors.MapEditor;
  */
 public class AddLayerAction extends AbstractLayerAction
 {
-    public AddLayerAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.add.name"),
-              Resources.getString("action.layer.add.tooltip"), Resources.getImageDescriptor("gnome-new.png"));
-    }
+//    public AddLayerAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.add.name"),
+//              Resources.getString("action.layer.add.tooltip"), Resources.getImageDescriptor("gnome-new.png"));
+//    }
 
     protected void doPerformAction() {
         Map currentMap = editor.getMap();
@@ -40,7 +41,13 @@ public class AddLayerAction extends AbstractLayerAction
     }
     
     @Override
+	public boolean calcEnabled(ISelection selection) {
+		return true;
+	}
+    
+    @Override
     public boolean isEnabled() {
     	return true;
     }
+
 }

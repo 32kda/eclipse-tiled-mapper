@@ -714,7 +714,7 @@ public class HexMapView extends MapView
 
     protected void paintObjectGroup(GC g, ObjectGroup og) {
         // NOTE: Direct copy from OrthoMapView (candidate for generalization)
-        Iterator itr = og.getObjects();
+        Iterator<?> itr = og.getObjects();
 
         while (itr.hasNext()) {
             MapObject mo = (MapObject) itr.next();

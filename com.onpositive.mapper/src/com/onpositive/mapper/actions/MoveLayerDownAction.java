@@ -12,6 +12,7 @@
 
 package com.onpositive.mapper.actions;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 
 import tiled.core.Map;
@@ -26,14 +27,14 @@ import com.onpositive.mapper.editors.MapEditor;
  */
 public class MoveLayerDownAction extends AbstractLayerAction
 {
-    public MoveLayerDownAction(ISelectionProvider provider, MapEditor editor) {
-        super(provider,
-              editor,
-              Resources.getString("action.layer.movedown.name"),
-              Resources.getString("action.layer.movedown.tooltip"), Resources.getImageDescriptor("gnome-down.png"));
-
-//        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_DOWN"));
-    }
+//    public MoveLayerDownAction(ISelectionProvider provider, MapEditor editor) {
+//        super(provider,
+//              editor,
+//              Resources.getString("action.layer.movedown.name"),
+//              Resources.getString("action.layer.movedown.tooltip"), Resources.getImageDescriptor("gnome-down.png"));
+//
+////        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_DOWN"));
+//    }
 
     protected void doPerformAction() {
         Map map = editor.getMap();
@@ -46,7 +47,7 @@ public class MoveLayerDownAction extends AbstractLayerAction
     }
     
     @Override
-    public boolean calcEnabled() {
-    	return super.calcEnabled() && editor.getMap().getTotalLayers() > 1;
+    public boolean calcEnabled(ISelection selection) {
+    	return super.calcEnabled(selection) && editor.getCurrentLayerIndex() > 0;
     }
 }

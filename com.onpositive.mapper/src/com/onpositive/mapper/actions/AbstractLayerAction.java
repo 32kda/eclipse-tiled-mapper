@@ -1,23 +1,16 @@
-/*
- *  Tiled Map Editor, (c) 2004-2006
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- */
-
 package com.onpositive.mapper.actions;
 
 import java.util.Vector;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.actions.SelectionProviderAction;
+import org.eclipse.jface.action.Action;
+
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
 
 import tiled.core.Map;
 import tiled.core.MapLayer;
@@ -25,49 +18,50 @@ import tiled.mapeditor.undo.MapLayerStateEdit;
 
 import com.onpositive.mapper.editors.MapEditor;
 
-/**
- * Provides a common abstract class for actions that modify the layer
- * configuration. It makes sure the undo/redo information is properly
- * maintained.
- *
- * todo: These actions will need to listen to changing of the current selected
- * todo: layer index as well as changes to the opened map. Action should always
- * todo: be disabled when no map is opened. More specific checks should be
- * todo: included in subclasses.
- *
- * @version $Id$
- */
-public abstract class AbstractLayerAction extends SelectionProviderAction
-{
-    protected final MapEditor editor;
+public abstract class AbstractLayerAction extends Action implements
+		IEditorActionDelegate {
+	
+	IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent event) {
+			if (event.getProperty().equals(MapEditor.CURRENT_LAYER_PROP))
+				setEnabled(calcEnabled(new StructuredSelection()));
+		}
+	};
+	
+	protected MapEditor editor;
 
-    protected AbstractLayerAction(ISelectionProvider provider,
-                                  MapEditor editor, String name, String description)
-    {
-        super(provider, name);
-        setDescription(description);
-//        putValue(SHORT_DESCRIPTION, description);
-//        putValue(ACTION_COMMAND_KEY, name);
-        this.editor = editor;
-        setEnabled(calcEnabled());
+	protected IAction action;
+
+	@Override
+	public void run(IAction action) {
+		run();
+	}
+
+	@Override
+	public void selectionChanged(IAction action, ISelection selection) {
+		setEnabled(calcEnabled(selection));
+	}
+	
+    public boolean calcEnabled(ISelection selection) {
+    	return editor != null && editor.getCurrentLayerIndex() >= 0;
     }
 
-    protected AbstractLayerAction(ISelectionProvider provider,
-                                  MapEditor editor, String name, String description, ImageDescriptor icon)
-    {
-        this(provider, editor, name, description);
-        setImageDescriptor(icon);
-    }
-    
-    @Override
-    public void selectionChanged(IStructuredSelection selection) {
-    	setEnabled(calcEnabled());
-    }
-    
-    public boolean calcEnabled() {
-    	return !getSelection().isEmpty();
-    }
-    
+	@Override
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		if (targetEditor instanceof MapEditor) {
+			if (action != this)
+				this.action = action;
+			if (editor != null)
+				editor.removePartPropertyListener(propertyChangeListener);
+			editor = (MapEditor) targetEditor;
+			editor.addPartPropertyListener(propertyChangeListener);
+		} else {
+			editor = null;
+		}
+	}
+	
     @Override
     public void run() {
     	 // Capture the layers before the operation is executed.
@@ -79,7 +73,7 @@ public abstract class AbstractLayerAction extends SelectionProviderAction
         // Capture the layers after the operation is executed and create the
         // layer state edit instance.
         Vector<MapLayer> layersAfter = new Vector<MapLayer>(map.getLayerVector());
-        MapLayerStateEdit mapLayerStateEdit = //TODO add undo support 
+        MapLayerStateEdit mapLayerStateEdit =  
                 new MapLayerStateEdit(map, layersBefore, layersAfter,
                                       getText());
         editor.addEdit(mapLayerStateEdit);
@@ -89,4 +83,5 @@ public abstract class AbstractLayerAction extends SelectionProviderAction
      * Actually performs the action that modifies the layer configuration.
      */
     protected abstract void doPerformAction();
+
 }
