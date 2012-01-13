@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
@@ -22,14 +23,15 @@ public class NewTMXWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		newFilePage = new NewTMXFilePage(selection);		
+		newFilePage = new NewTMXFilePage(selection);	
+		setWindowTitle("New TMX map");
 	}
 	
 	@Override
 	public void addPages() {
 		addPage(newFilePage);
 	}
-
+		
 	@Override
 	public boolean performFinish() {
 		final IFile file = newFilePage.createNewFile();
