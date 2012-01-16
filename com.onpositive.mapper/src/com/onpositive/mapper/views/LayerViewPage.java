@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
@@ -28,6 +29,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -173,6 +175,7 @@ public class LayerViewPage extends Page {
 	protected LayerViewAction addObjectGroupAction;
 	protected LayerViewAction deleteLayerAction;
 	protected LayerViewAction cloneLayerAction;
+	protected ControlListener controlListener;
 	
 	public LayerViewPage(MapEditor mapEditor) {
 		super();
@@ -233,12 +236,15 @@ public class LayerViewPage extends Page {
 			
 			
 		});
+		TableLayout layout = new TableLayout();
+		layout.addColumnData(new ColumnWeightData(100, 75, true));
+		table.setLayout(layout);
 		final TableColumn column = mainColumn.getColumn();
 		column.setText("title");
 		column.setWidth(500);
 		column.setResizable(true);
 		column.setMoveable(true);
-		parent.addControlListener(new ControlListener() {
+		controlListener = new ControlListener() {
 			
 			@Override
 			public void controlResized(ControlEvent e) {
@@ -252,7 +258,8 @@ public class LayerViewPage extends Page {
 				// TODO Auto-generated method stub
 				
 			}
-		});
+		};
+		parent.addControlListener(controlListener);
 		ViewContentProvider provider = new ViewContentProvider();
 		viewer.addCheckStateListener(provider);
 		viewer.setContentProvider(provider);
@@ -405,5 +412,10 @@ public class LayerViewPage extends Page {
 
 	protected void updateViewer() {
 		viewer.setInput(map);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 }

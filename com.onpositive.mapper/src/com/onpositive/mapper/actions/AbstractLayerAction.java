@@ -76,9 +76,12 @@ public abstract class AbstractLayerAction extends Action implements
         // Capture the layers after the operation is executed and create the
         // layer state edit instance.
         Vector<MapLayer> layersAfter = new Vector<MapLayer>(map.getLayerVector());
+        String text = getText();
+        if (action != null )
+        	text = action.getText();
         MapLayerStateEdit mapLayerStateEdit =  
                 new MapLayerStateEdit(map, layersBefore, layersAfter,
-                                      getText());
+                                      text);
         editor.addEdit(mapLayerStateEdit);
     }
 
