@@ -176,6 +176,7 @@ public class LayerViewPage extends Page {
 	protected LayerViewAction deleteLayerAction;
 	protected LayerViewAction cloneLayerAction;
 	protected ControlListener controlListener;
+	private Composite parent;
 	
 	public LayerViewPage(MapEditor mapEditor) {
 		super();
@@ -222,6 +223,7 @@ public class LayerViewPage extends Page {
 
 	@Override
 	public void createControl(final Composite parent) {
+		this.parent = parent;
 		Table table = new Table(parent, SWT.CHECK | SWT.FULL_SELECTION | SWT.BORDER);
 		parent.setBounds(parent.getClientArea());
 		table.setLinesVisible(true);
@@ -417,5 +419,6 @@ public class LayerViewPage extends Page {
 	@Override
 	public void dispose() {
 		super.dispose();
+		parent.removeControlListener(controlListener);
 	}
 }
