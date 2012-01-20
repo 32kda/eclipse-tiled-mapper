@@ -212,12 +212,14 @@ public class OrthoMapView extends MapView
         int endX = clipRect.x + clipRect.width;
         int endY = clipRect.y + clipRect.height;
 
+        gc.setLineStyle(SWT.LINE_DASH);
         for (int x = startX; x < endX; x += tsize.x) {
             gc.drawLine(x, clipRect.y, x, clipRect.y + clipRect.height - 1);
         }
         for (int y = startY; y < endY; y += tsize.y) {
             gc.drawLine(clipRect.x, y, clipRect.x + clipRect.width - 1, y);
         }
+        gc.setLineStyle(SWT.LINE_SOLID);
     }
 
     protected void paintCoordinates(GC gc) {

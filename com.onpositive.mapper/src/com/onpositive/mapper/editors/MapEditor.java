@@ -1210,6 +1210,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public boolean hasClipboardData() {
 		return clipboardLayer != null;
 	}
+	
+	public void setShowGrid(boolean showGrid) {
+		mapView.setShowGrid(showGrid);
+	}
 
 
 }

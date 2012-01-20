@@ -59,7 +59,7 @@ public abstract class MapView extends Composite implements PaintListener
     protected boolean showGrid;
     protected boolean antialiasGrid;
     protected Color gridColor;
-    protected int gridOpacity;
+    protected int gridOpacity = 180;
 
     protected static double[] zoomLevels = {
         0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
