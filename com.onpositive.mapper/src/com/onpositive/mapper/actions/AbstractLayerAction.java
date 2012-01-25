@@ -63,6 +63,14 @@ public abstract class AbstractLayerAction extends Action implements
 		} else {
 			editor = null;
 		}
+		setEnabled(calcEnabled());
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		if (action != null)
+			action.setEnabled(enabled);
 	}
 	
     @Override
