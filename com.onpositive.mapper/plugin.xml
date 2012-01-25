@@ -153,6 +153,14 @@
                style="toggle"
                toolbarPath="mapview">
          </action>
+         <action
+               class="com.onpositive.mapper.actions.HighlightCurrentLayerAction"
+               icon="icons/details_highlighted.gif"
+               id="com.onpositive.mapper.highlightCurrentLayer"
+               label="Highlight Current Layer"
+               style="toggle"
+               toolbarPath="mapview">
+         </action>
          <menu
                id="com.onpositive.mapper.mapMenu"
                label="Map"

@@ -1026,6 +1026,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				currentLayer = index;
 				firePartPropertyChanged(CURRENT_LAYER_PROP, "" + oldCurLayer,
 						"" + currentLayer);
+				mapView.setCurrentLayer(currentLayer);
 				// layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
 				// false, false);
 			}
@@ -1213,7 +1214,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	
 	public void setShowGrid(boolean showGrid) {
 		mapView.setShowGrid(showGrid);
+		mapView.redraw();
 	}
 
-
+	public void setHighlightCurrentLayer(boolean hightlight) {
+		mapView.setHighlightSelectedLayer(hightlight);
+		mapView.redraw();
+	}
+	
+	
 }

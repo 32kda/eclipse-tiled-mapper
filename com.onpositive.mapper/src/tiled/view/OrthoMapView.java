@@ -119,7 +119,6 @@ public class OrthoMapView extends MapView
             for (int x = startX, gx = startX * tsize.x;
                     x < endX; x++, gx += tsize.x) {
                 Tile tile = layer.getTileAt(x, y);
-
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
                     	if (shouldPaintBrushTile())
