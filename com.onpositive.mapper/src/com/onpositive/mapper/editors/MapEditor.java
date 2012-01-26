@@ -1221,6 +1221,24 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		mapView.setHighlightSelectedLayer(hightlight);
 		mapView.redraw();
 	}
+
+	public void selectNextLayer() {
+		if (currentMap.getTotalLayers() < 2)
+			return;
+		if (currentLayer == 0) 
+			setCurrentLayer(currentMap.getTotalLayers() - 1);
+		else
+			setCurrentLayer(currentLayer - 1);
+	}
+	
+	public void selectPrevLayer() {
+		if (currentMap.getTotalLayers() < 2)
+			return;
+		if (currentLayer == currentMap.getTotalLayers() - 1) 
+			setCurrentLayer(0);
+		else
+			setCurrentLayer(currentLayer + 1);
+	}
 	
 	
 }

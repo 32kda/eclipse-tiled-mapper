@@ -155,7 +155,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.HighlightCurrentLayerAction"
-               icon="icons/details_highlighted.gif"
+               icon="icons/highlightmarker-red.png"
                id="com.onpositive.mapper.highlightCurrentLayer"
                label="Highlight Current Layer"
                style="toggle"
@@ -262,6 +262,49 @@
                type="org.eclipse.ui.views.properties.IPropertySource">
          </adapter>
       </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            category="com.onpositive.mapper.layers"
+            categoryId="com.onpositive.mapper.layers"
+            defaultHandler="com.onpositive.mapper.handlers.SelectPreviousLayerHandler"
+            id="com.onpositive.mapper.selectPreviousLayerCommand"
+            name="Select previous layer">
+      </command>
+      <category
+            id="com.onpositive.mapper.layers"
+            name="Layers">
+      </category>
+      <command
+            category="com.onpositive.mapper.layers"
+            categoryId="com.onpositive.mapper.layers"
+            defaultHandler="com.onpositive.mapper.handlers.SelectNextLayerHandler"
+            id="com.onpositive.mapper.selectNextLayerCommand"
+            name="Select next layer">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.onpositive.mapper.selectPreviousLayerCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="PAGE_UP">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.selectNextLayerCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="PAGE_DOWN">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="com.onpositive.mapper.context"
+            name="Mapper Context">
+      </context>
    </extension>
 
 </plugin>
