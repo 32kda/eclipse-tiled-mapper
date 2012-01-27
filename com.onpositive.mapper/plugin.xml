@@ -295,21 +295,21 @@
          point="org.eclipse.ui.bindings">
       <key
             commandId="com.onpositive.mapper.selectPreviousLayerCommand"
-            contextId="org.eclipse.ui.contexts.window"
+            contextId="com.onpositive.mapper.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="PAGE_UP">
       </key>
       <key
             commandId="com.onpositive.mapper.selectNextLayerCommand"
-            contextId="org.eclipse.ui.contexts.window"
+            contextId="com.onpositive.mapper.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="PAGE_DOWN">
       </key>
       <key
             commandId="com.onpositive.mapper.highlightCurrentLayer"
-            contextId="org.eclipse.ui.contexts.window"
+            contextId="com.onpositive.mapper.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+1">
+            sequence="H">
       </key>
    </extension>
    <extension

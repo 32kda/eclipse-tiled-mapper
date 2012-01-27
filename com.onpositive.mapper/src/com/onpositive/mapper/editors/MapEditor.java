@@ -103,11 +103,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		
 		@Override
 		public void partActivated(IWorkbenchPartReference partRef) {
-			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor) {
+			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor && activation == null) {
 				activation = service.activateContext(MAPPER_CONTEXT_ID);
+				System.out.println("activated");
 			} else if (activation != null) {
 				service.deactivateContext(activation);
 				activation = null;
+				System.out.println("deactivated");
 			}
 		}
 
@@ -219,12 +221,12 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
 	private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
 	private static final String TOOL_FILL = Resources.getString("tool.fill.name");
-	private static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
-	private static final String TOOL_SELECT = Resources.getString("tool.select.name");
-	private static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
-	private static final String TOOL_ADD_OBJECT = Resources.getString("tool.addobject.name");
-	private static final String TOOL_REMOVE_OBJECT = Resources.getString("tool.removeobject.name");
-	private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
+//	private static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
+//	private static final String TOOL_SELECT = Resources.getString("tool.select.name");
+//	private static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
+//	private static final String TOOL_ADD_OBJECT = Resources.getString("tool.addobject.name");
+//	private static final String TOOL_REMOVE_OBJECT = Resources.getString("tool.removeobject.name");
+//	private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
 	private static final Preferences prefs = TiledConfiguration.root();
 
 	private static IPartListener2 mapEditorListener = new PartListener();
