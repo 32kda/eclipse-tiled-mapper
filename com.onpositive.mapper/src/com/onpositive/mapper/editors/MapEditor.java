@@ -103,13 +103,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		
 		@Override
 		public void partActivated(IWorkbenchPartReference partRef) {
-			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor && activation == null) {
+			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor) {
+				if (activation == null) {
 				activation = service.activateContext(MAPPER_CONTEXT_ID);
-				System.out.println("activated");
+				}
 			} else if (activation != null) {
 				service.deactivateContext(activation);
 				activation = null;
-				System.out.println("deactivated");
 			}
 		}
 
