@@ -39,13 +39,17 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.contexts.IContextActivation;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
@@ -80,6 +84,7 @@ import com.onpositive.mapper.actions.CopyAction;
 import com.onpositive.mapper.actions.PasteAction;
 import com.onpositive.mapper.dialogs.ObjectPropertyDialog;
 import com.onpositive.mapper.perspective.MapperPerspective;
+import com.onpositive.mapper.ui.UIUtil;
 
 /**
  * Main Editor class for Map Editor Part
@@ -90,6 +95,64 @@ import com.onpositive.mapper.perspective.MapperPerspective;
 public class MapEditor extends EditorPart implements MapChangeListener, ILocalUndoSupport {
 
 	public static final String CURRENT_LAYER_PROP = "currentLayer";
+	
+	protected static class PartListener implements IPartListener2 {
+		private static final IContextService service = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
+		private static IContextActivation activation;
+		
+		@Override
+		public void partActivated(IWorkbenchPartReference partRef) {
+			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor) {
+				activation = service.activateContext("com.onpositive.mapper.context");
+			} else if (activation != null) {
+				service.deactivateContext(activation);
+				activation = null;
+			}
+		}
+
+		@Override
+		public void partBroughtToTop(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partClosed(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partDeactivated(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partOpened(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partHidden(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partVisible(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void partInputChanged(IWorkbenchPartReference partRef) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 
 	protected class MapMouseListener implements MouseListener,
 			MouseMoveListener, MouseTrackListener {
@@ -163,6 +226,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
 	private static final Preferences prefs = TiledConfiguration.root();
 
+	private static IPartListener2 mapEditorListener = new PartListener();
+	
 	private Map currentMap;
 	private Tile currentTile;
 	private AbstractBrush currentBrush;
@@ -201,6 +266,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private Action pasteAction;
 
 	private MapLayer clipboardLayer;
+
 	
     @Override
 	public void doSave(IProgressMonitor monitor) {
@@ -287,6 +353,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 						mapChanged(null);
 				}
 			});
+			site.getPage().addPartListener(mapEditorListener);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

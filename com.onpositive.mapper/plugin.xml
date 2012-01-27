@@ -265,23 +265,30 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
-      <command
-            category="com.onpositive.mapper.layers"
-            categoryId="com.onpositive.mapper.layers"
-            defaultHandler="com.onpositive.mapper.handlers.SelectPreviousLayerHandler"
-            id="com.onpositive.mapper.selectPreviousLayerCommand"
-            name="Select previous layer">
-      </command>
       <category
             id="com.onpositive.mapper.layers"
             name="Layers">
       </category>
       <command
-            category="com.onpositive.mapper.layers"
+            categoryId="com.onpositive.mapper.layers"
+            defaultHandler="com.onpositive.mapper.handlers.SelectPreviousLayerHandler"
+            id="com.onpositive.mapper.selectPreviousLayerCommand"
+            name="Select previous layer">
+      </command>
+      <command
             categoryId="com.onpositive.mapper.layers"
             defaultHandler="com.onpositive.mapper.handlers.SelectNextLayerHandler"
             id="com.onpositive.mapper.selectNextLayerCommand"
             name="Select next layer">
+      </command>
+      <command
+            defaultHandler="com.onpositive.mapper.handlers.HighlightLayerActionHandler"
+            id="com.onpositive.mapper.highlightCurrentLayer"
+            name="Highlight current layer">
+         <state
+               class="org.eclipse.ui.handlers.RegistryToggleState:false"
+               id="STYLE">
+         </state>
       </command>
    </extension>
    <extension
@@ -297,6 +304,12 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="PAGE_DOWN">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.highlightCurrentLayer"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+1">
       </key>
    </extension>
    <extension
