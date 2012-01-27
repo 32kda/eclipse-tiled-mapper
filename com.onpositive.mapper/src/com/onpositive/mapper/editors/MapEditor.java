@@ -97,13 +97,14 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public static final String CURRENT_LAYER_PROP = "currentLayer";
 	
 	protected static class PartListener implements IPartListener2 {
+		private static final String MAPPER_CONTEXT_ID = "com.onpositive.mapper.context";
 		private static final IContextService service = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
 		private static IContextActivation activation;
 		
 		@Override
 		public void partActivated(IWorkbenchPartReference partRef) {
 			if (partRef.getId().indexOf("mapper") > 0 && UIUtil.getActiveEditor() instanceof MapEditor) {
-				activation = service.activateContext("com.onpositive.mapper.context");
+				activation = service.activateContext(MAPPER_CONTEXT_ID);
 			} else if (activation != null) {
 				service.deactivateContext(activation);
 				activation = null;
