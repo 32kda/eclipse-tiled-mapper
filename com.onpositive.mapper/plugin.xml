@@ -171,6 +171,9 @@
             <separator
                   name="modifyGroup">
             </separator>
+            <groupMarker
+                  name="tilesetGroup">
+            </groupMarker>
          </menu>
          <action
                class="com.onpositive.mapper.actions.MoveLayerDownAction"
@@ -240,6 +243,7 @@
                icon="icons/add.png"
                id="com.onpositive.mapper.addTileset"
                label="Add Tileset"
+               menubarPath="com.onpositive.mapper.tilesetMenu"
                style="push"
                toolbarPath="basic">
          </action>
@@ -248,9 +252,15 @@
                icon="icons/remove.gif"
                id="com.onpositive.mapper.removeTileset"
                label="Remove Tileset"
+               menubarPath="com.onpositive.mapper.tilesetMenu"
                style="push"
                toolbarPath="basic">
          </action>
+         <menu
+               id="com.onpositive.mapper.tilesetMenu"
+               label="Tileset"
+               path="additions">
+         </menu>
       </viewContribution>
    </extension>
    <extension
@@ -318,6 +328,20 @@
             id="com.onpositive.mapper.context"
             name="Mapper Context">
       </context>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="com.onpositive.mapper.menuContribution1">
+         <menu
+               label="label">
+         </menu>
+      </menuContribution>
+      <group
+            id="com.onpositive.mapper.group1"
+            separatorsVisible="true">
+      </group>
    </extension>
 
 </plugin>
