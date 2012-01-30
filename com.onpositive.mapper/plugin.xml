@@ -90,6 +90,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.AddObjectPointerStateAction"
+               definitionId="com.onpositive.mapper.addObjectCommand"
                icon="icons/addobj-16.gif"
                id="com.onpositive.mapper.addObjAction"
                label="Add Object"
@@ -98,6 +99,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.MarqeePointerStateAction"
+               definitionId="com.onpositive.mapper.rectSelectToolCommand"
                icon="icons/rect-select-16.png"
                id="com.onpositive.mapper.select"
                label="Rectangular Selection"
@@ -114,6 +116,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.FillPointerStateAction"
+               definitionId="com.onpositive.mapper.fillToolCommand"
                icon="icons/bucket-fill-16.png"
                id="com.onpositive.mapper.fillAction"
                label="Fill"
@@ -122,6 +125,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.ErasePointerStateAction"
+               definitionId="com.onpositive.mapper.eraseToolCommand"
                icon="icons/eraser-16.png"
                id="com.onpositive.mapper.eraseAction"
                label="Erase"
@@ -130,6 +134,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.MovePointerStateAction"
+               definitionId="com.onpositive.mapper.moveToolCommand"
                icon="icons/move-16.png"
                id="com.onpositive.mapper.moveAction"
                label="Move"
@@ -138,6 +143,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.DrawPointerStateAction"
+               definitionId="com.onpositive.mapper.drawToolCommand"
                icon="icons/pencil-16.png"
                id="com.onpositive.mapper.drawAction"
                label="Draw"
@@ -177,6 +183,7 @@
          </menu>
          <action
                class="com.onpositive.mapper.actions.MoveLayerDownAction"
+               definitionId="com.onpositive.mapper.moveLayerDownCommand"
                icon="icons/gnome-down.png"
                id="com.onpositive.mapper.moveDown"
                label="Move Layer Down"
@@ -185,6 +192,7 @@
          </action>
          <action
                class="com.onpositive.mapper.actions.MoveLayerUpAction"
+               definitionId="com.onpositive.mapper.moveLayerUpCommand"
                icon="icons/gnome-up.png"
                id="com.onpositive.mapper.moveUp"
                label="Move Layer Up"
@@ -243,7 +251,6 @@
                icon="icons/add.png"
                id="com.onpositive.mapper.addTileset"
                label="Add Tileset"
-               menubarPath="com.onpositive.mapper.tilesetMenu"
                style="push"
                toolbarPath="basic">
          </action>
@@ -252,15 +259,9 @@
                icon="icons/remove.gif"
                id="com.onpositive.mapper.removeTileset"
                label="Remove Tileset"
-               menubarPath="com.onpositive.mapper.tilesetMenu"
                style="push"
                toolbarPath="basic">
          </action>
-         <menu
-               id="com.onpositive.mapper.tilesetMenu"
-               label="Tileset"
-               path="additions">
-         </menu>
       </viewContribution>
    </extension>
    <extension
@@ -300,6 +301,48 @@
                id="STYLE">
          </state>
       </command>
+      <category
+            id="com.onpositive.mapper.tilesets"
+            name="Tilesets">
+      </category>
+      <command
+            category="com.onpositive.mapper.tilesets"
+            defaultHandler="com.onpositive.mapper.handlers.AddTilesetHandler"
+            id="com.onpositive.mapper.addTileset"
+            name="Add tileset">
+      </command>
+      <command
+            id="com.onpositive.mapper.moveLayerUpCommand"
+            name="Move Layer Up">
+      </command>
+      <command
+            id="com.onpositive.mapper.moveLayerDownCommand"
+            name="Move Layer Down">
+      </command>
+      <command
+            id="com.onpositive.mapper.drawToolCommand"
+            name="Draw Tool">
+      </command>
+      <command
+            id="com.onpositive.mapper.eraseToolCommand"
+            name="Erase Tool">
+      </command>
+      <command
+            id="com.onpositive.mapper.rectSelectToolCommand"
+            name="Rectangular Selection Tool">
+      </command>
+      <command
+            id="com.onpositive.mapper.moveToolCommand"
+            name="Move Tool">
+      </command>
+      <command
+            id="com.onpositive.mapper.fillToolCommand"
+            name="Fill Tool">
+      </command>
+      <command
+            id="com.onpositive.mapper.addObjectCommand"
+            name="Add Object Tool">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -321,6 +364,54 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="H">
       </key>
+      <key
+            commandId="com.onpositive.mapper.moveLayerUpCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+ARROW_UP">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.moveLayerDownCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+ARROW_DOWN">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.drawToolCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="D">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.moveToolCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.eraseToolCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="E">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.rectSelectToolCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="R">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.fillToolCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F">
+      </key>
+      <key
+            commandId="com.onpositive.mapper.addObjectCommand"
+            contextId="com.onpositive.mapper.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="O">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
@@ -333,15 +424,28 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="com.onpositive.mapper.menuContribution1">
+            locationURI="menu:org.eclipse.ui.main.menu">
          <menu
-               label="label">
+               label="Tilesets">
+            <command
+                  commandId="com.onpositive.mapper.addTileset"
+                  label="Add Tileset"
+                  style="push">
+               <visibleWhen>
+                  <with
+		                variable="activeContexts">
+		             <iterate
+		                   ifEmpty="false"
+		                   operator="or">
+		                <equals
+		                      value="com.onpositive.mapper.context">
+		                </equals>
+		             </iterate>
+		          </with>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
-      <group
-            id="com.onpositive.mapper.group1"
-            separatorsVisible="true">
-      </group>
    </extension>
 
 </plugin>

@@ -15,7 +15,7 @@ public class AddTilesetAction extends TilesetAction {
 	}
 	
 	@Override
-	protected void runForMap(IAction action, Map map) {
+	public void runForMap(IAction action, Map map) {
 		NewTilesetDialog dialog = new NewTilesetDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		dialog.setInitialTileSize(map.getTileWidth(),map.getTileHeight());
 		int open = dialog.open();
