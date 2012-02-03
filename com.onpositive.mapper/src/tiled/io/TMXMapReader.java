@@ -1,17 +1,24 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ * Copyright 2004-2010, Thorbjørn Lindeijer <thorbjorn@lindeijer.nl>
+ * Copyright 2004-2006, Adam Turk <aturk@biggeruniverse.com>
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This file is part of libtiled-java.
  *
- *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <bjorn@lindeijer.nl>
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library;  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package tiled.io.xml;
-
+package tiled.io;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -21,12 +28,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -36,26 +43,27 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import tiled.core.*;
-import tiled.io.ImageHelper;
-import tiled.io.MapReader;
-import tiled.io.PluginLogger;
 import tiled.mapeditor.resources.Resources;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.Base64;
+import tiled.util.Converter;
 import tiled.util.Util;
 
 /**
- * The standard map reader for TMX files.
+ * The standard map reader for TMX files. Supports reading .tmx, .tmx.gz and *.tsx files.
  */
-public class XMLMapTransformer implements MapReader
+public class TMXMapReader
 {
     private Map map;
     private String xmlPath;
-    private PluginLogger logger;
+    private String error;
     private final EntityResolver entityResolver = new MapEntityResolver();
 
-    public XMLMapTransformer() {
-        logger = new PluginLogger();
+    public TMXMapReader() {
+    }
+
+    String getError() {
+        return error;
     }
 
     private static String makeUrl(String filename) throws MalformedURLException {
@@ -98,9 +106,7 @@ public class XMLMapTransformer implements MapReader
             } else if ("boolean".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = Boolean.valueOf(args[i]);
             } else {
-                logger.debug("Unsupported argument type " +
-                        parameterTypes[i].getName() +
-                        ", defaulting to java.lang.String");
+                // Unsupported argument type, defaulting to String
                 conformingArguments[i] = args[i];
             }
         }
@@ -110,15 +116,15 @@ public class XMLMapTransformer implements MapReader
 
     private void setOrientation(String o) {
         if ("isometric".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_ISO);
+            map.setOrientation(Map.ORIENTATION_ISOMETRIC);
         } else if ("orthogonal".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_ORTHO);
+            map.setOrientation(Map.ORIENTATION_ORTHOGONAL);
         } else if ("hexagonal".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_HEX);
+            map.setOrientation(Map.ORIENTATION_HEXAGONAL);
         } else if ("shifted".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_SHIFTED);
+            map.setOrientation(Map.ORIENTATION_SHIFTED);
         } else {
-            logger.warn("Unknown orientation '" + o + "'");
+            System.out.println("Unknown orientation '" + o + "'");
         }
     }
 
@@ -148,14 +154,14 @@ public class XMLMapTransformer implements MapReader
                InvocationTargetException {
         Constructor cons = null;
         try {
-            cons = reflector.getConstructor(null);
+            cons = reflector.getConstructor((Class[]) null);
         } catch (SecurityException e1) {
             e1.printStackTrace();
         } catch (NoSuchMethodException e1) {
             e1.printStackTrace();
             return null;
         }
-        Object o = cons.newInstance(null);
+        Object o = cons.newInstance((Object[]) null);
         Node n;
 
         Method[] methods = reflector.getMethods();
@@ -172,9 +178,9 @@ public class XMLMapTransformer implements MapReader
                         reflectInvokeMethod(o,methods[j],
                                 new String [] {n.getNodeValue()});
                     } else {
-                        logger.warn("Unsupported attribute '" +
-                                n.getNodeName() +
-                                "' on <" + node.getNodeName() + "> tag");
+                        System.out.println("Unsupported attribute '" +
+                                n.getNodeName() + "' on <" +
+                                node.getNodeName() + "> tag");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -184,62 +190,47 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t, String baseDir) throws IOException
-    {
-        Image img = null;
-
-        String source = getAttributeValue(t, "source");
-
-        if (source != null) {
-            if (Util.checkRoot(source)) {
-                source = makeUrl(source);
-            } else {
-                source = makeUrl(baseDir + source);
-            }
-            img = new Image(Display.getDefault(),new URL(source).openStream());
-            // todo: check whether external images would also be faster drawn
-            // todo: from a scaled instance, see below
-        } else {
-            NodeList nl = t.getChildNodes();
-
-            for (int i = 0; i < nl.getLength(); i++) {
-                Node node = nl.item(i);
-                if ("data".equals(node.getNodeName())) {
-                    Node cdata = node.getFirstChild();
-                    if (cdata == null) {
-                        logger.warn("image <data> tag enclosed no " +
-                                "data. (empty data tag)");
-                    } else {
-                        String sdata = cdata.getNodeValue();
-                        char[] charArray = sdata.trim().toCharArray();
-                        byte[] imageData = Base64.decode(charArray);
-                        img = ImageHelper.bytesToSWTImage(imageData);
-
-                        // Deriving a scaled instance, even if it has the same
-                        // size, somehow makes drawing of the tiles a lot
-                        // faster on various systems (seen on Linux, Windows
-                        // and MacOS X).
-//                        img = img.getScaledInstance( //TODO check whether it slows the process
+//    private Image unmarshalImage(Node t, String baseDir) throws IOException
+//    {
+//        Image img = null;
+//
+//        String source = getAttributeValue(t, "source");
+//
+//        if (source != null) {
+//            if (checkRoot(source)) {
+//                source = makeUrl(source);
+//            } else {
+//                source = makeUrl(baseDir + source);
+//            }
+//            img = ImageIO.read(new URL(source));
+//        } else {
+//            NodeList nl = t.getChildNodes();
+//
+//            for (int i = 0; i < nl.getLength(); i++) {
+//                Node node = nl.item(i);
+//                if ("data".equals(node.getNodeName())) {
+//                    Node cdata = node.getFirstChild();
+//                    if (cdata != null) {
+//                        String sdata = cdata.getNodeValue();
+//                        char[] charArray = sdata.trim().toCharArray();
+//                        byte[] imageData = Base64.decode(charArray);
+//                        img = ImageHelper.bytesToImage(imageData);
+//
+//                        // Deriving a scaled instance, even if it has the same
+//                        // size, somehow makes drawing of the tiles a lot
+//                        // faster on various systems (seen on Linux, Windows
+//                        // and MacOS X).
+//                        img = img.getScaledInstance(
 //                                img.getWidth(null), img.getHeight(null),
 //                                Image.SCALE_FAST);
-                    }
-                    break;
-                }
-            }
-        }
-
-        /*
-        if (getAttributeValue(t, "set") != null) {
-            TileSet ts = (TileSet)map.getTilesets().get(
-                    Integer.parseInt(getAttributeValue(t, "set")));
-            if (ts != null) {
-                ts.addImage(img);
-            }
-        }
-        */
-
-        return img;
-    }
+//                    }
+//                    break;
+//                }
+//            }
+//        }
+//
+//        return img;
+//    }
 
     private TileSet unmarshalTilesetFile(InputStream in, String filename)
         throws Exception
@@ -263,20 +254,18 @@ public class XMLMapTransformer implements MapReader
 
             // There can be only one tileset in a .tsx file.
             tsNode = tsNodeList.item(0);
-            if (tsNode != null)
-            {
+            if (tsNode != null) {
                 set = unmarshalTileset(tsNode);
                 if (set.getSource() != null) {
-                    logger.warn("Recursive external Tilesets are not supported.");
+                    System.out.println("Recursive external tilesets are not supported.");
                 }
                 set.setSource(filename);
             }
 
             xmlPath = xmlPathSave;
         } catch (SAXException e) {
-            logger.error("Failed while loading " + filename + ": "
-                    + e.getLocalizedMessage());
-            //e.printStackTrace();
+            error = "Failed while loading " + filename + ": " +
+                    e.getLocalizedMessage();
         }
 
         return set;
@@ -295,32 +284,24 @@ public class XMLMapTransformer implements MapReader
 
         if (source != null) {
             String filename = tilesetBaseDir + source;
-            //if (Util.checkRoot(source)) {
+            //if (checkRoot(source)) {
             //    filename = makeUrl(source);
             //}
 
             TileSet ext = null;
 
             try {
-                //just a little check for tricky people...
-                String extention = source.substring(source.lastIndexOf('.') + 1);
-                if (!"tsx".equals(extention.toLowerCase())) {
-                    logger.warn("tileset files should end in .tsx! ("+source+")");
-                }
-
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
+                ext.setFirstGid(firstGid);
             } catch (FileNotFoundException fnf) {
-                logger.error("Could not find external tileset file " +
-                        filename);
+                error = "Could not find external tileset file " + filename;
             }
 
             if (ext == null) {
-                logger.error("tileset "+source+" was not loaded correctly!");
-                ext = new TileSet();
+                error = "Tileset " + source + " was not loaded correctly!";
             }
 
-            ext.setFirstGid(firstGid);
             return ext;
         }
         else {
@@ -343,15 +324,14 @@ public class XMLMapTransformer implements MapReader
 
                 if (child.getNodeName().equalsIgnoreCase("image")) {
                     if (hasTilesetImage) {
-                        logger.warn("Ignoring illegal image element after tileset image.");
+                        System.out.println("Ignoring illegal image element after tileset image.");
                         continue;
                     }
 
                     String imgSource = getAttributeValue(child, "source");
-                    String id = getAttributeValue(child, "id");
                     String transStr = getAttributeValue(child, "trans");
 
-                    if (imgSource != null && id == null) {
+                    if (imgSource != null) {
                         // Not a shared image, but an entire set in one image
                         // file. There should be only one image element in this
                         // case.
@@ -360,31 +340,19 @@ public class XMLMapTransformer implements MapReader
                         // FIXME: importTileBitmap does not fully support URLs
                         String sourcePath = imgSource;
                         if (! new File(imgSource).isAbsolute()) {
-                        	File dir = new File(tilesetBaseDir);
-                        	while(imgSource.startsWith("..") && imgSource.length() > 2) {
-                        		dir = dir.getParentFile();
-                        		imgSource = imgSource.substring(3);
-                        	}
-                            sourcePath = dir.getAbsolutePath() + File.separator + imgSource;
+                            sourcePath = tilesetBaseDir + imgSource;
                         }
 
-                        logger.info("Importing " + sourcePath + "...");
-
                         if (transStr != null) {
+                            if (transStr.startsWith("#"))
+                                transStr = transStr.substring(1);
+
                             int colorInt = Integer.parseInt(transStr, 16);
-                            int blue =  colorInt & 255;
-                            int	green = (colorInt >> 8) & 255;
-                            int red =   (colorInt >> 16) & 255;
-                            set.setTransparentColor(new RGB(red,green,blue));
+                            set.setTransparentColor(Converter.intToRGB(colorInt));
                         }
 
                         set.importTileBitmap(sourcePath, new BasicTileCutter(
                                 tileWidth, tileHeight, tileSpacing, tileMargin));
-                    } else {
-                        Image image = unmarshalImage(child, tilesetBaseDir);
-                        String idValue = getAttributeValue(child, "id");
-                        int imageId = Integer.parseInt(idValue);
-                        set.addImage(image, imageId);
                     }
                 }
                 else if (child.getNodeName().equalsIgnoreCase("tile")) {
@@ -492,13 +460,12 @@ public class XMLMapTransformer implements MapReader
 
         try {
             if (isAnimated) {
-                tile = (Tile)unmarshalClass(AnimatedTile.class, t);
+                tile = (Tile) unmarshalClass(AnimatedTile.class, t);
             } else {
-                tile = (Tile)unmarshalClass(Tile.class, t);
+                tile = (Tile) unmarshalClass(Tile.class, t);
             }
         } catch (Exception e) {
-            logger.error("failed creating tile: "+e.getLocalizedMessage());
-            //e.printStackTrace();
+            error = "Failed creating tile: " + e.getLocalizedMessage();
             return tile;
         }
 
@@ -511,16 +478,70 @@ public class XMLMapTransformer implements MapReader
             if ("image".equalsIgnoreCase(child.getNodeName())) {
                 int id = getAttribute(child, "id", -1);
                 Image img = unmarshalImage(child, baseDir);
-                if (id < 0) {
-                    id = set.addImage(img);
-                }
-                tile.setImage(id);
+                tile.setImage(img);
             } else if ("animation".equalsIgnoreCase(child.getNodeName())) {
-                // TODO: fill this in once XMLMapWriter is complete
+                // TODO: fill this in once TMXMapWriter is complete
             }
         }
 
         return tile;
+    }
+    
+    private Image unmarshalImage(Node t, String baseDir) throws IOException
+    {
+        Image img = null;
+
+        String source = getAttributeValue(t, "source");
+
+        if (source != null) {
+            if (Util.checkRoot(source)) {
+                source = makeUrl(source);
+            } else {
+                source = makeUrl(baseDir + source);
+            }
+            img = new Image(Display.getDefault(),new URL(source).openStream());
+            // todo: check whether external images would also be faster drawn
+            // todo: from a scaled instance, see below
+        } else {
+            NodeList nl = t.getChildNodes();
+
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node node = nl.item(i);
+                if ("data".equals(node.getNodeName())) {
+                    Node cdata = node.getFirstChild();
+                    if (cdata == null) {
+                        System.err.println("image <data> tag enclosed no " +
+                                "data. (empty data tag)");
+                    } else {
+                        String sdata = cdata.getNodeValue();
+                        char[] charArray = sdata.trim().toCharArray();
+                        byte[] imageData = Base64.decode(charArray);
+                        img = ImageHelper.bytesToSWTImage(imageData);
+
+                        // Deriving a scaled instance, even if it has the same
+                        // size, somehow makes drawing of the tiles a lot
+                        // faster on various systems (seen on Linux, Windows
+                        // and MacOS X).
+//                        img = img.getScaledInstance( //TODO check whether it slows the process
+//                                img.getWidth(null), img.getHeight(null),
+//                                Image.SCALE_FAST);
+                    }
+                    break;
+                }
+            }
+        }
+
+        /*
+        if (getAttributeValue(t, "set") != null) {
+            TileSet ts = (TileSet)map.getTilesets().get(
+                    Integer.parseInt(getAttributeValue(t, "set")));
+            if (ts != null) {
+                ts.addImage(img);
+            }
+        }
+        */
+
+        return img;
     }
 
     private MapLayer unmarshalObjectGroup(Node t) throws Exception {
@@ -587,9 +608,7 @@ public class XMLMapTransformer implements MapReader
 
                 if (encoding != null && "base64".equalsIgnoreCase(encoding)) {
                     Node cdata = child.getFirstChild();
-                    if (cdata == null) {
-                        logger.warn("layer <data> tag enclosed no data. (empty data tag)");
-                    } else {
+                    if (cdata != null) {
                         char[] enc = cdata.getNodeValue().trim().toCharArray();
                         byte[] dec = Base64.decode(enc);
                         ByteArrayInputStream bais = new ByteArrayInputStream(dec);
@@ -597,8 +616,10 @@ public class XMLMapTransformer implements MapReader
 
                         String comp = getAttributeValue(child, "compression");
 
-                        if (comp != null && "gzip".equalsIgnoreCase(comp)) {
+                        if ("gzip".equalsIgnoreCase(comp)) {
                             is = new GZIPInputStream(bais);
+                        } else if ("zlib".equalsIgnoreCase(comp)) {
+                            is = new InflaterInputStream(bais);
                         } else {
                             is = bais;
                         }
@@ -767,8 +788,8 @@ public class XMLMapTransformer implements MapReader
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(entityResolver);
             InputSource insrc = new InputSource(in);
-            insrc.setSystemId(xmlPath);
-            insrc.setEncoding("UTF8");
+//            insrc.setSystemId(xmlPath);
+            insrc.setEncoding("UTF-8");
             doc = builder.parse(insrc);
         } catch (SAXException e) {
             e.printStackTrace();
@@ -780,8 +801,6 @@ public class XMLMapTransformer implements MapReader
         return map;
     }
 
-
-    // MapReader interface
 
     public Map readMap(String filename) throws Exception {
         xmlPath = filename.substring(0,
@@ -815,6 +834,18 @@ public class XMLMapTransformer implements MapReader
         //
         return unmarshalledMap;
     }
+    
+    public Map readMap(InputStream in, File baseFile) throws Exception {
+		xmlPath = makeUrl(baseFile.getParent());
+		if (xmlPath.startsWith("file:/"))
+			xmlPath = xmlPath.substring("file:/".length());
+
+        Map unmarshalledMap = unmarshal(in);
+
+        //unmarshalledMap.setFilename(xmlFile)
+        //
+        return unmarshalledMap;
+	}
 
     public TileSet readTileset(String filename) throws Exception {
         String xmlFile = filename;
@@ -830,49 +861,18 @@ public class XMLMapTransformer implements MapReader
     }
 
     public TileSet readTileset(InputStream in) throws Exception {
-        // TODO: The MapReader interface should be changed...
         return unmarshalTilesetFile(in, ".");
     }
 
-    /**
-     * @see tiled.io.PluggableMapIO#getFilter()
-     */
-    public String getFilter() throws Exception {
-        return "*.tmx,*.tmx.gz,*.tsx";
-    }
-
-    public String getPluginPackage() {
-        return "Tiled internal TMX reader/writer";
-    }
-
-    /**
-     * @see tiled.io.PluggableMapIO#getDescription()
-     */
-    public String getDescription() {
-        return "This is the core Tiled TMX format reader\n" +
-            "\n" +
-            "Tiled Map Editor, (c) 2004-2008\n" +
-            "Adam Turk\n" +
-            "Bjorn Lindeijer";
-    }
-
-    public String getName() {
-        return "Default Tiled XML (TMX) map reader";
-    }
-
-    public boolean accept(File pathname) {
+    public boolean accept(File pathName) {
         try {
-            String path = pathname.getCanonicalPath();
+            String path = pathName.getCanonicalPath();
             if (path.endsWith(".tmx") || path.endsWith(".tsx") ||
                         path.endsWith(".tmx.gz")) {
                 return true;
             }
         } catch (IOException e) {}
         return false;
-    }
-
-    public void setLogger(PluginLogger logger) {
-        this.logger = logger;
     }
 
     private class MapEntityResolver implements EntityResolver
@@ -886,15 +886,29 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-	public Map readMap(ByteArrayInputStream in, File baseFile) throws Exception {
-		xmlPath = makeUrl(baseFile.getParent());
-		if (xmlPath.startsWith("file:/"))
-			xmlPath = xmlPath.substring("file:/".length());
+    /**
+     * This utility function will check the specified string to see if it
+     * starts with one of the OS root designations. (Ex.: '/' on Unix, 'C:' on
+     * Windows)
+     *
+     * @param filename a filename to check for absolute or relative path
+     * @return <code>true</code> if the specified filename starts with a
+     *         filesystem root, <code>false</code> otherwise.
+     */
+    public static boolean checkRoot(String filename) {
+        File[] roots = File.listRoots();
 
-        Map unmarshalledMap = unmarshal(in);
+        for (File root : roots) {
+            try {
+                String canonicalRoot = root.getCanonicalPath().toLowerCase();
+                if (filename.toLowerCase().startsWith(canonicalRoot)) {
+                    return true;
+                }
+            } catch (IOException e) {
+                // Do we care?
+            }
+        }
 
-        //unmarshalledMap.setFilename(xmlFile)
-        //
-        return unmarshalledMap;
-	}
+        return false;
+    }
 }

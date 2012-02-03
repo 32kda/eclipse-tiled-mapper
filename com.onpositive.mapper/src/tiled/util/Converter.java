@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.geom.PathIterator;
 
 import org.eclipse.swt.graphics.Path;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 public class Converter {
@@ -199,6 +200,17 @@ public class Converter {
             }
         }
         rect.y = newv;
+    }
+    
+    public static int RGBtoInt(RGB rgb) {
+    	return rgb.red << 16 + rgb.green << 8 + rgb.blue;
+    }
+    
+    public static RGB intToRGB(int colorInt) {
+    	int blue =  colorInt & 255;
+        int	green = (colorInt >> 8) & 255;
+        int red =   (colorInt >> 16) & 255;
+		return new RGB(red,green,blue);
     }
 
 }

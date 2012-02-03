@@ -237,13 +237,13 @@ public abstract class MapView extends Composite implements PaintListener {
 
 		int orientation = p.getOrientation();
 
-		if (orientation == Map.MDO_ISO) {
+		if (orientation == Map.ORIENTATION_ISOMETRIC) {
 			mapView = new IsoMapView(parent, p);
-		} else if (orientation == Map.MDO_ORTHO) {
+		} else if (orientation == Map.ORIENTATION_ORTHOGONAL) {
 			mapView = new OrthoMapView(parent, p);
-		} else if (orientation == Map.MDO_HEX) {
+		} else if (orientation == Map.ORIENTATION_HEXAGONAL) {
 			mapView = new HexMapView(parent, p);
-		} else if (orientation == Map.MDO_SHIFTED) {
+		} else if (orientation == Map.ORIENTATION_SHIFTED) {
 			mapView = new ShiftedMapView(parent, p);
 		}
 
@@ -524,5 +524,9 @@ public abstract class MapView extends Composite implements PaintListener {
 
 	public void setHighlightSelectedLayer(boolean highlightSelectedLayer) {
 		this.highlightSelectedLayer = highlightSelectedLayer;
+	}
+
+	public void repaintRegion(Rectangle redraw, Point brushSize) {
+		redraw(redraw.x,redraw.y,redraw.width,redraw.height,true);
 	}
 }

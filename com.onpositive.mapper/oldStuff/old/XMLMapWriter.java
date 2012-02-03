@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package tiled.io.xml;
+package com.onpositive.mapper.old;
 
 import java.io.*;
 import java.util.*;
@@ -28,6 +28,7 @@ import tiled.io.MapWriter;
 import tiled.io.PluginLogger;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.Base64;
+import tiled.util.Converter;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -122,13 +123,13 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("version", "1.0");
 
         switch (map.getOrientation()) {
-            case Map.MDO_ORTHO:
+            case Map.ORIENTATION_ORTHOGONAL:
                 w.writeAttribute("orientation", "orthogonal"); break;
-            case Map.MDO_ISO:
+            case Map.ORIENTATION_ISOMETRIC:
                 w.writeAttribute("orientation", "isometric"); break;
-            case Map.MDO_HEX:
+            case Map.ORIENTATION_HEXAGONAL:
                 w.writeAttribute("orientation", "hexagonal"); break;
-            case Map.MDO_SHIFTED:
+            case Map.ORIENTATION_SHIFTED:
                 w.writeAttribute("orientation", "shifted"); break;
         }
 
@@ -247,8 +248,7 @@ public class XMLMapWriter implements MapWriter
 
             RGB trans = set.getTransparentColor();
             if (trans != null) {
-                w.writeAttribute("trans", Integer.toHexString(
-                            trans.red << 16 + trans.green << 8 + trans.blue).substring(2));
+                w.writeAttribute("trans", Integer.toHexString(Converter.RGBtoInt(trans)).substring(2));
             }
             w.endElement();
 

@@ -122,7 +122,7 @@ public class OrthoMapView extends MapView
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
                     	if (shouldPaintBrushTile())
-                    		tile.draw(gc, gx, gy, zoom);
+                    		RenderingUtil.drawTile(gc, tile, gx, gy, zoom);
                         Transform transform = new Transform(getDisplay());
                         transform.translate(gx,gy);
                 		gc.setTransform(transform);
@@ -134,7 +134,7 @@ public class OrthoMapView extends MapView
                         //paintEdge(g, layer, gx, gy);
                     }
                     else {
-                        tile.draw(gc, gx, gy, zoom);
+                    	RenderingUtil.drawTile(gc, tile, gx, gy, zoom);
                     }
                 }
             }
@@ -326,6 +326,33 @@ public class OrthoMapView extends MapView
         int startY = region.y * tsize.y - maxExtraHeight;
         int endX = (region.x + region.width) * tsize.x;
         int endY = (region.y + region.height) * tsize.y;
+
+        redraw(startX, startY, endX - startX, endY - startY,true);
+    }
+    
+    public void repaintRegion(Rectangle region, Point brushSize) {
+    	Point tsize = getTileSize();
+        if (tsize.x <= 0 || tsize.y <= 0) {
+            return;
+        }
+        int maxExtraHeight =
+                (int) (map.getTileHeightMax() * zoom - tsize.y);
+
+        // Calculate the visible corners of the region
+        int startX = region.x * tsize.x;
+        int startY = region.y * tsize.y - maxExtraHeight;
+        int endX = (region.x + region.width) * tsize.x;
+        int endY = (region.y + region.height) * tsize.y;
+        
+        int xDiff = brushSize.x - tsize.x;
+        int yDiff = brushSize.y - tsize.y;
+        
+        if (brushSize.x > tsize.x || brushSize.y > tsize.y) {
+	    	startX -= brushSize.x;
+	    	endX += brushSize.x;
+	    	startY -= brushSize.y;
+	    	endY += brushSize.y;
+        }
 
         redraw(startX, startY, endX - startX, endY - startY,true);
     }

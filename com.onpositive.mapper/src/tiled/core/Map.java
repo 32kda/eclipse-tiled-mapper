@@ -26,21 +26,22 @@ import tiled.mapeditor.resources.Resources;
  */
 public class Map extends MultilayerPlane
 {
-    /** Orthogonal. */
-    public static final int MDO_ORTHO   = 1;
+	
+	/** Orthogonal. */
+    public static final int ORIENTATION_ORTHOGONAL = 1;
     /** Isometric. */
-    public static final int MDO_ISO     = 2;
+    public static final int ORIENTATION_ISOMETRIC = 2;
     /** Hexagonal. */
-    public static final int MDO_HEX     = 4;
+    public static final int ORIENTATION_HEXAGONAL = 4;
     /** Shifted (used for iso and hex). */
-    public static final int MDO_SHIFTED = 5;
+    public static final int ORIENTATION_SHIFTED = 5;
 
     private Vector<MapLayer> specialLayers;
     private Vector<TileSet> tilesets;
     private LinkedList<MapObject> objects;
 
     private int tileWidth, tileHeight;
-    private int orientation = MDO_ORTHO;
+    private int orientation = ORIENTATION_ORTHOGONAL;
     private final List<MapChangeListener> mapChangeListeners = new LinkedList<MapChangeListener>();
     private Properties properties;
     private String filename;

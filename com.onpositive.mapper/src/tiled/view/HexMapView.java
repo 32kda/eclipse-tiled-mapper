@@ -295,7 +295,7 @@ public class HexMapView extends MapView
                         //TiledLogger.getLogger().info(
                         //    "image tile at " + x + "," + y
                         //    + " at " + gx + "," + gy);
-                        t.draw(g2d, (int)gx, (int)(gy + tsize.y),
+                        RenderingUtil.drawTile(g2d, t, (int)gx, (int)(gy + tsize.y),
                             zoom);
                     }
                 }

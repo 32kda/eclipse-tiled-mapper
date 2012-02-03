@@ -64,10 +64,11 @@ import tiled.core.ObjectGroup;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 import tiled.core.TileSet;
-import tiled.io.xml.XMLMapTransformer;
-import tiled.io.xml.XMLMapWriter;
+import tiled.io.TMXMapReader;
+import tiled.io.TMXMapWriter;
 import tiled.mapeditor.brush.AbstractBrush;
 import tiled.mapeditor.brush.CustomBrush;
+import tiled.mapeditor.brush.ITileBrush;
 import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.resources.Resources;
 import tiled.mapeditor.selection.SelectionLayer;
@@ -281,7 +282,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				basePath = path.toOSString();
 			}
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			new XMLMapWriter().writeMap(currentMap, outputStream, basePath);
+			new TMXMapWriter().writeMap(currentMap, outputStream, basePath);
 			byte[] bytes = outputStream.toByteArray();
 			document.set(new String(bytes));
 			documentProvider.saveDocument(monitor,input,document,true);
@@ -317,11 +318,11 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			if (input instanceof IPathEditorInput) {
 				IPath path = ((IPathEditorInput) input).getPath();
 				System.out.println(path.toOSString());
-				currentMap = new XMLMapTransformer().readMap(
+				currentMap = new TMXMapReader().readMap(
 						new ByteArrayInputStream(document.get().getBytes()),
 						path.toFile());
 			} else {
-				currentMap = new XMLMapTransformer()
+				currentMap = new TMXMapReader()
 						.readMap(new ByteArrayInputStream(document.get()
 								.getBytes()));
 			}
@@ -1039,7 +1040,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 						layer.setOffset(brushRedraw.x, brushRedraw.y);
 					}
 				}
-				mapView.repaintRegion(redraw);
+				if (currentBrush instanceof ITileBrush)
+					mapView.repaintRegion(redraw, ((ITileBrush) currentBrush).getTile().getSize());
+				else
+					mapView.repaintRegion(redraw);
 				cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
 				// cursorHighlight.selectRegion(currentBrush.getShape());
 				mapView.repaintRegion(brushRedraw);

@@ -62,11 +62,11 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paintLayer(GC g2d, TileLayer layer) {
+    protected void paintLayer(GC gc, TileLayer layer) {
         // Turn anti alias on for selection drawing
-        g2d.setAntialias(SWT.ON);
+        gc.setAntialias(SWT.ON);
 
-        Rectangle clipRect = g2d.getClipping();
+        Rectangle clipRect = gc.getClipping();
         Point tileSize = getTileSize();
         int tileStepY = tileSize.y / 2 == 0 ? 1 : tileSize.y / 2;
         Polygon gridPoly = createGridPolygon(0, -tileSize.y, 0);
@@ -94,11 +94,11 @@ public class IsoMapView extends MapView
                         //Polygon gridPoly = createGridPolygon(
                                 //drawLoc.x, drawLoc.y - tileSize.height, 0);
                         gridPoly.translate(drawLoc.x, drawLoc.y);
-                        g2d.fillPolygon(Converter.getPolygonArray(gridPoly));
+                        gc.fillPolygon(Converter.getPolygonArray(gridPoly));
                         gridPoly.translate(-drawLoc.x, -drawLoc.y);
                         //paintEdge(g2d, layer, drawLoc.x, drawLoc.y);
                     } else {
-                        tile.draw(g2d, drawLoc.x, drawLoc.y, zoom);
+                        RenderingUtil.drawTile(gc, tile, drawLoc.x, drawLoc.y, zoom);
                     }
                 }
 
