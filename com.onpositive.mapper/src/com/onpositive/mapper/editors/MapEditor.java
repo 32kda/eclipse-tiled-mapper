@@ -1046,7 +1046,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 					mapView.repaintRegion(redraw);
 				cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
 				// cursorHighlight.selectRegion(currentBrush.getShape());
-				mapView.repaintRegion(brushRedraw);
+				if (currentBrush instanceof ITileBrush)
+					mapView.repaintRegion(brushRedraw, ((ITileBrush) currentBrush).getTile().getSize());
+				else
+					mapView.repaintRegion(brushRedraw);
 			}
 		}
 	}

@@ -100,6 +100,8 @@ public abstract class MapView extends Composite implements PaintListener {
 		defaultGridColor = new Color(getDisplay(), DEFAULT_GRID_COLOR);
 		addPaintListener(this);
 		// setOpaque(true);
+        Point preferredSize = getPreferredSize();
+        setBounds(0,0,preferredSize.x,preferredSize.y);
 	}
 
 	public void toggleMode(int modeModifier) {

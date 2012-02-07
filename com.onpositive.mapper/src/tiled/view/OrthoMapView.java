@@ -61,8 +61,6 @@ public class OrthoMapView extends MapView
         propPoly.addPoint(12, 0);
         propPoly.addPoint(12, 12);
         
-        Point preferredSize = getPreferredSize();
-        setBounds(0,0,preferredSize.x,preferredSize.y);
         selColor = new Color(parent.getDisplay(),DEFAULT_SEL_COLOR);
     }
 
@@ -107,7 +105,7 @@ public class OrthoMapView extends MapView
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = gc.getClipping();
-        int startX = clipRect.x / tsize.x;
+        int startX = clipRect.x / tsize.x - 1; //-1 for large tiles
         int startY = clipRect.y / tsize.y;
         int endX = (clipRect.x + clipRect.width) / tsize.x + 1;
         int endY = (clipRect.y + clipRect.height) / tsize.y + 3;
@@ -344,16 +342,12 @@ public class OrthoMapView extends MapView
         int endX = (region.x + region.width) * tsize.x;
         int endY = (region.y + region.height) * tsize.y;
         
-        int xDiff = brushSize.x - tsize.x;
-        int yDiff = brushSize.y - tsize.y;
-        
         if (brushSize.x > tsize.x || brushSize.y > tsize.y) {
 	    	startX -= brushSize.x;
 	    	endX += brushSize.x;
 	    	startY -= brushSize.y;
 	    	endY += brushSize.y;
         }
-
         redraw(startX, startY, endX - startX, endY - startY,true);
     }
 

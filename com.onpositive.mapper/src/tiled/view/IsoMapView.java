@@ -91,6 +91,8 @@ public class IsoMapView extends MapView
 
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
+                    	if (shouldPaintBrushTile())
+                    		RenderingUtil.drawTile(gc, tile, drawLoc.x, drawLoc.y, zoom);
                         //Polygon gridPoly = createGridPolygon(
                                 //drawLoc.x, drawLoc.y - tileSize.height, 0);
                         gridPoly.translate(drawLoc.x, drawLoc.y);
@@ -231,6 +233,25 @@ public class IsoMapView extends MapView
 
         redraw(x1, y1, x2 - x1, y2 - y1, true);
     }
+    
+    public void repaintRegion(Rectangle region, Point brushSize) {
+        Point tileSize = getTileSize();
+        int maxExtraHeight =
+            (int)(map.getTileHeightMax() * zoom) - tileSize.y;
+
+        int mapX1 = region.x;
+        int mapY1 = region.y;
+        int mapX2 = mapX1 + region.width;
+        int mapY2 = mapY1 + region.height;
+
+        int x1 = tileToScreenCoords(mapX1, mapY2).x;
+        int y1 = tileToScreenCoords(mapX1, mapY1).y - maxExtraHeight;
+        int x2 = tileToScreenCoords(mapX2, mapY1).x;
+        int y2 = tileToScreenCoords(mapX2, mapY2).y;
+
+        redraw(x1, y1, x2 - x1, y2 - y1,true);
+    }
+    
 
     public Point getPreferredSize() {
         Point tileSize = getTileSize();
