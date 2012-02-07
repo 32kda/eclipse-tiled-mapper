@@ -95,9 +95,11 @@ public class IsoMapView extends MapView
                     		RenderingUtil.drawTile(gc, tile, drawLoc.x, drawLoc.y, zoom);
                         //Polygon gridPoly = createGridPolygon(
                                 //drawLoc.x, drawLoc.y - tileSize.height, 0);
-                        gridPoly.translate(drawLoc.x, drawLoc.y);
+                        gridPoly.translate(drawLoc.x, drawLoc.y - tileSize.y / 2);
+                        gc.setAlpha(SEL_HOVER_ALPHA);
                         gc.fillPolygon(Converter.getPolygonArray(gridPoly));
-                        gridPoly.translate(-drawLoc.x, -drawLoc.y);
+                        gridPoly.translate(-drawLoc.x, -(drawLoc.y - tileSize.y / 2));
+                        gc.setAlpha(OPAQUE);
                         //paintEdge(g2d, layer, drawLoc.x, drawLoc.y);
                     } else {
                         RenderingUtil.drawTile(gc, tile, drawLoc.x, drawLoc.y, zoom);

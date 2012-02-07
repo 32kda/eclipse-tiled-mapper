@@ -41,9 +41,8 @@ import tiled.util.Converter;
  */
 public class OrthoMapView extends MapView
 {
-	protected static final int SEL_HOVER_ALPHA = 50;
 	protected Polygon propPoly;
-    protected Color selColor;
+//    protected Color selColor;
     
     private static final int OBJECT_FOREGROUND = SWT.COLOR_GRAY;
 
@@ -61,7 +60,7 @@ public class OrthoMapView extends MapView
         propPoly.addPoint(12, 0);
         propPoly.addPoint(12, 12);
         
-        selColor = new Color(parent.getDisplay(),DEFAULT_SEL_COLOR);
+//        selColor = new Color(parent.getDisplay(),DEFAULT_SEL_COLOR);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -126,7 +125,7 @@ public class OrthoMapView extends MapView
                 		gc.setTransform(transform);
                 		gc.setAlpha(SEL_HOVER_ALPHA);
                         gc.fillPolygon(Converter.getPolygonArray(gridPoly));
-                        gc.setAlpha(255);
+                        gc.setAlpha(OPAQUE);
                         gc.setTransform(null);
                         transform.dispose();
                         //paintEdge(g, layer, gx, gy);

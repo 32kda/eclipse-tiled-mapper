@@ -69,12 +69,13 @@ public abstract class MapView extends Composite implements PaintListener {
 	private static final RGB DEFAULT_BACKGROUND_COLOR = new RGB(64, 64, 64);
 	/** The default grid color (black). */
 	public static final RGB DEFAULT_GRID_COLOR = new RGB(0, 0, 0);
+	protected static final int SEL_HOVER_ALPHA = 50;
+	protected static final int OPAQUE = 255;
 
 	protected static Image propertyFlagImage;
 
 	protected Color defaultBgColor;
 	protected Color defaultGridColor;
-	protected RGB DEFAULT_SEL_COLOR = new RGB(0, 0, 200);
 	protected int pointerState;
 	private int currentLayer = 0;
 
