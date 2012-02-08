@@ -298,8 +298,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
+		// TODO Implement it
 	}
 
 	@Override
@@ -326,14 +325,11 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 						.readMap(new ByteArrayInputStream(document.get()
 								.getBytes()));
 			}
-			
 			IActionBars actionBars = getEditorSite().getActionBars();
 			undoAction= new UndoActionHandler(getSite(), undoContext);
 			undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
 			redoAction= new RedoActionHandler(getSite(), undoContext);
 			redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
-			actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-			actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
 			
 			copyAction = new CopyAction(this);
 			copyAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_COPY);
@@ -342,11 +338,9 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			pasteAction = new PasteAction(this);
 			pasteAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_PASTE);
 			addPartPropertyListener((IPropertyChangeListener) pasteAction);
-			actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-			actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
 			pasteAction.setEnabled(false);
 
-			
+			registerGlobalActionHandlers(actionBars);
 			
 			operationHistory.addOperationHistoryListener(new IOperationHistoryListener() {
 				
@@ -359,10 +353,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			});
 			site.getPage().addPartListener(mapEditorListener);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		setPartName(input.getName());
@@ -371,6 +363,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			statusLineManager = actionBars.getStatusLineManager();
 		}
 		firePropertyChange(IEditorPart.PROP_TITLE);
+	}
+
+	protected void registerGlobalActionHandlers(IActionBars actionBars) {
+		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
+		actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
 	}
 
 	@Override
@@ -426,6 +425,11 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	@Override
 	public void setFocus() {
 		mapView.setFocus();
+		IActionBars actionBars = getEditorSite().getActionBars();
+		
+		if (actionBars.getGlobalActionHandler(ActionFactory.UNDO.getId()) != undoAction) {
+			registerGlobalActionHandlers(actionBars);
+		}
 	}
 
 	public Map getMap() {
@@ -645,18 +649,18 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			}
 		}
 
-		 if (paintEdit != null) {
-		 if (layer != null) {
-		 try {
-		 MapLayer endLayer = paintEdit.getStart().createDiff(layer);
-		 paintEdit.end(endLayer);
-		 addEdit(paintEdit);
-		 } catch (Exception e) {
-		 e.printStackTrace();
-		 }
-		 }
-		 paintEdit = null;
-		 }
+		if (paintEdit != null) {
+			if (layer != null) {
+				try {
+					MapLayer endLayer = paintEdit.getStart().createDiff(layer);
+					paintEdit.end(endLayer);
+					addEdit(paintEdit);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			paintEdit = null;
+		}
 
 		currentObject = null;
 
@@ -1316,6 +1320,5 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		else
 			setCurrentLayer(currentLayer + 1);
 	}
-	
 	
 }
