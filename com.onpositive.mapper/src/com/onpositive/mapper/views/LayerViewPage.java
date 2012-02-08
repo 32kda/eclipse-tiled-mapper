@@ -251,7 +251,7 @@ public class LayerViewPage extends Page {
 			@Override
 			public void controlResized(ControlEvent e) {
 				int newWidth = parent.getBounds().width - 5;
-				if (newWidth > 0)
+				if (newWidth > 0 && !column.isDisposed())
 					column.setWidth(newWidth);
 			}
 			
