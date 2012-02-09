@@ -91,7 +91,7 @@ public class TileSet implements Iterable<Tile>
         try {
 	        ImageData imageData = new ImageData(imgFilename);
 	        if (transparentColor != null) {
-	//        	imageData.transparentPixel = imageData.palette.getPixel(transparentColor);
+//	        	imageData.transparentPixel = imageData.palette.getPixel(transparentColor);
 	        }
 	        image =  new Image(Display.getDefault(), imageData);
         } catch (Exception e) {
@@ -99,8 +99,9 @@ public class TileSet implements Iterable<Tile>
 		}
                
         Image buffered = new Image(Display.getDefault(),image,SWT.IMAGE_COPY);
-
+        cutter.setTransparentColor(transparentColor);
         importTileBitmap(buffered, cutter);
+        cutter.setTransparentColor(null);
     }
 
     /**
