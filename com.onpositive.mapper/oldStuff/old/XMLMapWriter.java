@@ -1,3 +1,5 @@
+package tiled.mapeditor.util;
+
 /*
  *  Tiled Map Editor, (c) 2004-2008
  *
@@ -10,7 +12,6 @@
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
-package com.onpositive.mapper.old;
 
 import java.io.*;
 import java.util.*;
@@ -26,6 +27,7 @@ import tiled.core.Map;
 import tiled.io.ImageHelper;
 import tiled.io.MapWriter;
 import tiled.io.PluginLogger;
+import tiled.io.xml.XMLWriter;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.Base64;
 import tiled.util.Converter;
