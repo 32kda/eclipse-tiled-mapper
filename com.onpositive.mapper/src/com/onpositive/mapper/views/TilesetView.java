@@ -3,6 +3,7 @@ package com.onpositive.mapper.views;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.internal.WorkbenchPlugin;
@@ -28,8 +29,7 @@ public class TilesetView extends PageBookView {
 
 			@Override
 			public void setFocus() {
-				// TODO Auto-generated method stub
-				
+				// Do nothing
 			}
 			
 			@Override
@@ -59,13 +59,15 @@ public class TilesetView extends PageBookView {
 
 	@Override
 	protected void doDestroyPage(IWorkbenchPart part, PageRec pageRecord) {
-		// TODO Auto-generated method stub
-
+		// Do nothing
 	}
 
 	@Override
 	protected IWorkbenchPart getBootstrapPart() {
-		// TODO Auto-generated method stub
+		IWorkbenchPage page = getSite().getPage();
+		if (page != null) {
+			return page.getActiveEditor();
+		}
 		return null;
 	}
 
