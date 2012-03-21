@@ -203,7 +203,8 @@ public class Converter {
     }
     
     public static int RGBtoInt(RGB rgb) {
-    	return rgb.red << 16 + rgb.green << 8 + rgb.blue;
+    	return 65536 * rgb.red + 256 * rgb.green + rgb.blue;
+
     }
     
     public static RGB intToRGB(int colorInt) {

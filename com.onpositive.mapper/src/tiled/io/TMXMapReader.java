@@ -47,6 +47,7 @@ import tiled.mapeditor.resources.Resources;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.Base64;
 import tiled.util.Converter;
+import tiled.util.TiledConfiguration;
 import tiled.util.Util;
 
 /**
@@ -393,9 +394,9 @@ public class TMXMapReader
                 String source = getAttributeValue(child, "source");
                 if (source != null) {
                     if (! new File(source).isAbsolute()) {
-                        source = xmlPath + source;
-                    }
-                    obj.setImageSource(source);
+                    	obj.setImageSource(xmlPath, source);
+                    } else
+                    	obj.setImageSource(source);
                 }
                 break;
             }
@@ -803,6 +804,7 @@ public class TMXMapReader
 
 
     public Map readMap(String filename) throws Exception {
+    	TiledConfiguration.addToRecentFiles(filename);
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
 
@@ -836,11 +838,13 @@ public class TMXMapReader
     }
     
     public Map readMap(InputStream in, File baseFile) throws Exception {
+    	TiledConfiguration.addToRecentFiles(baseFile.getAbsolutePath());
 		xmlPath = makeUrl(baseFile.getParent());
 		if (xmlPath.startsWith("file:/"))
 			xmlPath = xmlPath.substring("file:/".length());
 
         Map unmarshalledMap = unmarshal(in);
+        unmarshalledMap.setFilename(baseFile.getAbsolutePath());
 
         //unmarshalledMap.setFilename(xmlFile)
         //

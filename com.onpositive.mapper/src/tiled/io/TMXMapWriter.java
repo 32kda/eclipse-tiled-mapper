@@ -33,6 +33,7 @@ import tiled.core.Map;
 import tiled.io.xml.XMLWriter;
 import tiled.util.Base64;
 import tiled.util.Converter;
+import tiled.util.Util;
 
 /**
  * A writer for Tiled's TMX map format.
@@ -203,7 +204,7 @@ public class TMXMapWriter
         } else {
             w.startElement("tileset");
             w.writeAttribute("firstgid", set.getFirstGid());
-            w.writeAttribute("source", getRelativePath(wp, source));
+            w.writeAttribute("source", Util.getRelativePath(wp, source));
             if (set.getBaseDir() != null) {
                 w.writeAttribute("basedir", set.getBaseDir());
             }
@@ -244,11 +245,11 @@ public class TMXMapWriter
 
         if (tileBitmapFile != null) {
             w.startElement("image");
-            w.writeAttribute("source", getRelativePath(wp, tileBitmapFile));
+            w.writeAttribute("source", Util.getRelativePath(wp, tileBitmapFile));
 
             RGB trans = set.getTransparentColor();
             if (trans != null) {
-                w.writeAttribute("trans", Integer.toHexString(Converter.RGBtoInt(trans)).substring(2));
+                w.writeAttribute("trans", Integer.toHexString(Converter.RGBtoInt(trans)));
             }
             w.endElement();
 
@@ -474,86 +475,14 @@ public class TMXMapWriter
         if (mapObject.getImageSource().length() > 0) {
             w.startElement("image");
             w.writeAttribute("source",
-                    getRelativePath(wp, mapObject.getImageSource()));
+                    Util.getRelativePath(wp, mapObject.getImageSource()));
             w.endElement();
         }
 
         w.endElement();
     }
 
-    /**
-     * Returns the relative path from one file to the other. The function
-     * expects absolute paths, relative paths will be converted to absolute
-     * using the working directory.
-     *
-     * @param from the path of the origin file
-     * @param to   the path of the destination file
-     * @return     the relative path from origin to destination
-     */
-    public static String getRelativePath(String from, String to) {
-        if(!(new File(to)).isAbsolute())
-            return to;
-        
-        // Make the two paths absolute and unique
-        try {
-            from = new File(from).getCanonicalPath();
-            to = new File(to).getCanonicalPath();
-        } catch (IOException e) {
-        }
 
-        File fromFile = new File(from);
-        File toFile = new File(to);
-        Vector<String> fromParents = new Vector<String>();
-        Vector<String> toParents = new Vector<String>();
-
-        // Iterate to find both parent lists
-        while (fromFile != null) {
-            fromParents.add(0, fromFile.getName());
-            fromFile = fromFile.getParentFile();
-        }
-        while (toFile != null) {
-            toParents.add(0, toFile.getName());
-            toFile = toFile.getParentFile();
-        }
-
-        // Iterate while parents are the same
-        int shared = 0;
-        int maxShared = Math.min(fromParents.size(), toParents.size());
-        for (shared = 0; shared < maxShared; shared++) {
-            String fromParent = fromParents.get(shared);
-            String toParent = toParents.get(shared);
-            if (!fromParent.equals(toParent)) {
-                break;
-            }
-        }
-
-        // Append .. for each remaining parent in fromParents
-        StringBuffer relPathBuf = new StringBuffer();
-        for (int i = shared; i < fromParents.size() - 1; i++) {
-            relPathBuf.append(".." + File.separator);
-        }
-
-        // Add the remaining part in toParents
-        for (int i = shared; i < toParents.size() - 1; i++) {
-            relPathBuf.append(toParents.get(i) + File.separator);
-        }
-        relPathBuf.append(new File(to).getName());
-        String relPath = relPathBuf.toString();
-
-        // Turn around the slashes when path is relative
-        try {
-            String absPath = new File(relPath).getCanonicalPath();
-
-            if (!absPath.equals(relPath)) {
-                // Path is not absolute, turn slashes around
-                // Assumes: \ does not occur in file names
-                relPath = relPath.replace('\\', '/');
-            }
-        } catch (IOException e) {
-        }
-
-        return relPath;
-    }
 
     public boolean accept(File pathName) {
         try {

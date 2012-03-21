@@ -330,4 +330,8 @@ public abstract class MapLayer implements Cloneable
     public boolean canEdit() {
         return !getLocked() && isVisible();
     }
+    
+    public Map getMap() {
+    	return myMap;
+    }
 }

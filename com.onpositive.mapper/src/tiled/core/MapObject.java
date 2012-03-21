@@ -78,6 +78,15 @@ public class MapObject implements Cloneable
     }
 
     public void setImageSource(String source) {
+//    	File sourceFile = new File(source);
+//    	String sourcePath = source;
+//    	if (!sourceFile.isAbsolute()) {
+//    		File baseFile = new File(objectGroup.getMap().getFilename());
+//    		if (baseFile.exists()) {
+//    			File file = new File(baseFile.getParentFile(),source);
+//    			source = fi
+//    		}
+//    	}
         if (imageSource.equals(source))
             return;
 
@@ -106,9 +115,8 @@ public class MapObject implements Cloneable
 
         final int zoomedWidth = (int) (getWidth() * zoom);
         final int zoomedHeight = (int) (getHeight() * zoom);
-        Rectangle bounds2 = scaledImage.getBounds();
-        if (scaledImage == null || bounds2.width != zoomedWidth
-                || bounds2.height != zoomedHeight)
+        if (scaledImage == null || scaledImage.getBounds().width != zoomedWidth
+                || scaledImage.getBounds().height != zoomedHeight)
         {
             scaledImage = new Image(Display.getDefault(), image.getImageData().scaledTo(zoomedWidth, zoomedHeight));
         }
@@ -179,4 +187,18 @@ public class MapObject implements Cloneable
     public String toString() {
         return type + " (" + getX() + "," + getY() + ")";
     }
+
+	public void setImageSource(String basePath, String source) {
+        imageSource = source;
+
+        // Attempt to read the image
+        if (imageSource.length() > 0) {
+               image = new Image(Display.getDefault(), basePath + imageSource);
+        } else {
+            image = null;
+        }
+
+        scaledImage = null;
+		
+	}
 }

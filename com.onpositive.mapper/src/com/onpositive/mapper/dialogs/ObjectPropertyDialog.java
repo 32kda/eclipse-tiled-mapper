@@ -21,13 +21,17 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -38,6 +42,8 @@ import org.eclipse.swt.widgets.Text;
 
 import tiled.core.MapObject;
 import tiled.mapeditor.undo.ChangeObjectEdit;
+import tiled.util.TiledConfiguration;
+import tiled.util.Util;
 
 import com.onpositive.mapper.editors.ILocalUndoSupport;
 import com.onpositive.mapper.views.DblClickActivationStrategy;
@@ -46,6 +52,7 @@ public class ObjectPropertyDialog extends Dialog {
 
 	private static final String NAME_PROP = "Name";
 	private static final String VALUE_PROP = "Value";
+	protected static String path;
 
 	public class ViewContentProvider implements IStructuredContentProvider, ICellModifier {
 
@@ -144,6 +151,7 @@ public class ObjectPropertyDialog extends Dialog {
 	private final ILocalUndoSupport undoSupport;
 	private Text nameText;
 	private Text typeText;
+	private Text imageSourceText;
 	private Spinner widthSpinner;
 	private Spinner heightSpinner;
 
@@ -168,6 +176,44 @@ public class ObjectPropertyDialog extends Dialog {
 		createLabel(composite,"Type:");
 		typeText = new Text(composite,SWT.SINGLE | SWT.BORDER);
 		typeText.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
+		
+		createLabel(composite,"Image:");
+		Composite imgComposite = new Composite(composite,SWT.NONE);
+		imgComposite.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
+		GridLayout gridLayout = new GridLayout(2,false);
+		gridLayout.marginHeight = 0;
+		gridLayout.marginWidth = 0;
+		imgComposite.setLayout(gridLayout);
+		imageSourceText = new Text(imgComposite, SWT.SINGLE | SWT.BORDER);
+		imageSourceText.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
+		Button browseButton = new Button(imgComposite,SWT.PUSH);
+		browseButton.setText("...");
+		browseButton.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false,false));
+		browseButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(getShell(), SWT.NULL);
+				String baseFilename = mapObject.getObjectGroup().getMap().getFilename();
+				dialog.setFilterNames(new String[]{"Images"});
+				dialog.setFilterExtensions(new String[]{"*.jpg;*.png;*.gif"});
+				String startLocation = baseFilename;
+                if (startLocation == null) {
+                    startLocation = TiledConfiguration.fileDialogStartLocation();
+                }
+                dialog.setFilterPath(baseFilename);
+				String newPath = dialog.open();
+				if (newPath != null) {
+					imageSourceText.setText(newPath);
+					path = newPath;
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
 		
 		createLabel(composite,"Width:");
 		widthSpinner = new Spinner(composite,SWT.SINGLE | SWT.BORDER);
@@ -262,7 +308,7 @@ public class ObjectPropertyDialog extends Dialog {
     public void updateInfo() {
         nameText.setText(mapObject.getName());
         typeText.setText(mapObject.getType());
-//        objectImageSource.setText(object.getImageSource());
+        imageSourceText.setText(mapObject.getImageSource());
         widthSpinner.setSelection(mapObject.getWidth());
         heightSpinner.setSelection(mapObject.getHeight());
     }
@@ -273,7 +319,14 @@ public class ObjectPropertyDialog extends Dialog {
 
         mapObject.setName(nameText.getText());
         mapObject.setType(typeText.getText());
-//        mapObject.setImageSource(objectImageSource.getText());
+        String sourceFileName = imageSourceText.getText();
+        String baseFilename = mapObject.getObjectGroup().getMap().getFilename();
+        String relativePath = Util.getRelativePath(baseFilename,sourceFileName);
+        if (relativePath != null && !relativePath.isEmpty()) {
+        	String baseDir = sourceFileName.substring(0,sourceFileName.length() - relativePath.length());
+        	mapObject.setImageSource(baseDir, relativePath);
+        } else
+        	mapObject.setImageSource(sourceFileName);
         mapObject.setWidth(widthSpinner.getSelection());
         mapObject.setHeight(heightSpinner.getSelection());
     }

@@ -43,6 +43,7 @@ import org.w3c.dom.Element;
 
 import tiled.core.TileSet;
 import tiled.io.TMXMapWriter;
+import tiled.util.Util;
 
 import com.onpositive.mapper.dialogs.NewTilesetDialog;
 import com.onpositive.mapper.newwizard.ListDialogField.ColumnsDescription;
@@ -287,7 +288,7 @@ public class NewTMXFilePage extends WizardNewFileCreationPage {
 			  
 			IPath resourcePath = workspace.getRoot().getLocation().append(getContainerFullPath().append(
 					getFileName()));
-			String relativePath = TMXMapWriter.getRelativePath(resourcePath.toOSString(),tileSet.getTilebmpFile());
+			String relativePath = Util.getRelativePath(resourcePath.toOSString(),tileSet.getTilebmpFile());
 			imageElement.setAttribute("source",relativePath);
 			tileSetElement.appendChild(imageElement);
 			rootElement.appendChild(tileSetElement);
