@@ -20,6 +20,9 @@ import javax.imageio.ImageIO;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import com.onpositive.mapper.MapperPlugin;
 
 import tiled.util.Converter;
 
@@ -28,7 +31,8 @@ import tiled.util.Converter;
  */
 public class MapObject implements Cloneable
 {
-    private Properties properties = new Properties();
+    private static final String NOTIFICATION_ERROR_PATH = "icons/notification_error.png";
+	private Properties properties = new Properties();
     private ObjectGroup objectGroup;
     private Rectangle bounds = new Rectangle(0,0,0,0);
     private String name = "Object";
@@ -92,15 +96,23 @@ public class MapObject implements Cloneable
 
         imageSource = source;
 
-        // Attempt to read the image
-        if (imageSource.length() > 0) {
-               image = new Image(Display.getDefault(),imageSource);
-        } else {
-            image = null;
-        }
+        loadImage(imageSource);
 
         scaledImage = null;
     }
+
+	protected void loadImage(String source) {
+		// Attempt to read the image
+        if (source.length() > 0) {
+        	try {
+        		image = new Image(Display.getDefault(),source);
+        	} catch (Exception e) {
+        		image = AbstractUIPlugin.imageDescriptorFromPlugin(MapperPlugin.PLUGIN_ID,NOTIFICATION_ERROR_PATH).createImage();
+        	}
+        } else {
+            image = null;
+        }
+	}
 
     /**
      * Returns the image to be used when drawing this object. This image is
@@ -191,12 +203,7 @@ public class MapObject implements Cloneable
 	public void setImageSource(String basePath, String source) {
         imageSource = source;
 
-        // Attempt to read the image
-        if (imageSource.length() > 0) {
-               image = new Image(Display.getDefault(), basePath + imageSource);
-        } else {
-            image = null;
-        }
+        loadImage(basePath + imageSource);
 
         scaledImage = null;
 		
