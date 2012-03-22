@@ -284,7 +284,7 @@ public class TMXMapReader
         }
 
         if (source != null) {
-            String filename = tilesetBaseDir + source;
+            String filename = Util.getAbsoluteFromRelative(tilesetBaseDir, source);
             //if (checkRoot(source)) {
             //    filename = makeUrl(source);
             //}

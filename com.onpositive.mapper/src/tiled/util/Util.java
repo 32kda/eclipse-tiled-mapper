@@ -147,4 +147,23 @@ public class Util
 
         return relPath;
     }
+    
+    /**
+     * Gets absolute path from relative path
+     * @param baseDir Base directory
+     * @param relFilePath Relative path. If it is already absolute path, returns it
+     * @return Absolute file path
+     */
+    public static String getAbsoluteFromRelative(String baseDir, String relFilePath) {
+    	 String newPath = relFilePath;
+         if (! new File(relFilePath).isAbsolute()) {
+         	File dir = new File(baseDir);
+         	while(relFilePath.startsWith("..") && relFilePath.length() > 2) {
+         		dir = dir.getParentFile();
+         		relFilePath = relFilePath.substring(3);
+         	}
+             newPath = dir.getAbsolutePath() + File.separator + relFilePath;
+         }
+		return newPath;
+    }
 }

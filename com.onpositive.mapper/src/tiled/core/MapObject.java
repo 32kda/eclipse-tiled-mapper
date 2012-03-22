@@ -25,6 +25,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import com.onpositive.mapper.MapperPlugin;
 
 import tiled.util.Converter;
+import tiled.util.Util;
 
 /**
  * An object occupying an {@link ObjectGroup}.
@@ -203,7 +204,7 @@ public class MapObject implements Cloneable
 	public void setImageSource(String basePath, String source) {
         imageSource = source;
 
-        loadImage(basePath + imageSource);
+        loadImage(Util.getAbsoluteFromRelative(basePath,source));
 
         scaledImage = null;
 		
