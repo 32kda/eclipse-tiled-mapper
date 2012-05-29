@@ -342,6 +342,8 @@ public class TMXMapReader
                         String sourcePath = imgSource;
                         if (! new File(imgSource).isAbsolute()) {
                             sourcePath = tilesetBaseDir + imgSource;
+                            if (!new File(sourcePath).exists()) //XXX: Android - related tileset search fix. Introduced it because of the difference in Android asset readind and traditional FS file search
+                            	sourcePath = new File(new File(tilesetBaseDir).getParent(),imgSource).getAbsolutePath();
                         }
 
                         if (transStr != null) {
