@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.onpositive.mapper.feature_0.1.4.201205292253.jar" id="com.onpositive.mapper.feature" version="0.1.4.201205292253">
+   <feature url="features/com.onpositive.mapper.feature_0.1.4.201206071432.jar" id="com.onpositive.mapper.feature" version="0.1.4.201206071432">
       <category name="tiled_mapper"/>
    </feature>
    <category-def name="tiled_mapper" label="Eclipse Tiled Mapper feature">
