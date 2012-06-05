@@ -21,9 +21,11 @@
 package tiled.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -88,6 +90,8 @@ public class TileSet implements Iterable<Tile>
     	this.tileCutter = cutter;
         setTilesetImageFilename(imgFilename);
         Image image;
+        if (!new File(imgFilename).exists())
+        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Error reading map", "Can't unmarshal tileset " + imgFilename + ". File not found.");
         try {
 	        ImageData imageData = new ImageData(imgFilename);
 	        if (transparentColor != null) {

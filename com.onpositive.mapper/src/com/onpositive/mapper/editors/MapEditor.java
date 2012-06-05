@@ -3,6 +3,7 @@ package com.onpositive.mapper.editors;
 import java.awt.geom.Area;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Stack;
@@ -353,6 +354,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			});
 			site.getPage().addPartListener(mapEditorListener);
 		} catch (CoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1044,13 +1047,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 						layer.setOffset(brushRedraw.x, brushRedraw.y);
 					}
 				}
-				if (currentBrush instanceof ITileBrush)
+				if (currentBrush instanceof ITileBrush && ((ITileBrush) currentBrush).getTile() != null)
 					mapView.repaintRegion(redraw, ((ITileBrush) currentBrush).getTile().getSize());
 				else
 					mapView.repaintRegion(redraw);
 				cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
 				// cursorHighlight.selectRegion(currentBrush.getShape());
-				if (currentBrush instanceof ITileBrush)
+				if (currentBrush instanceof ITileBrush && ((ITileBrush) currentBrush).getTile() != null)
 					mapView.repaintRegion(brushRedraw, ((ITileBrush) currentBrush).getTile().getSize());
 				else
 					mapView.repaintRegion(brushRedraw);
