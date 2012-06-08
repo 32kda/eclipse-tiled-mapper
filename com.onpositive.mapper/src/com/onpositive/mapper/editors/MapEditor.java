@@ -3,7 +3,9 @@ package com.onpositive.mapper.editors;
 import java.awt.geom.Area;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Stack;
@@ -16,6 +18,7 @@ import org.eclipse.core.commands.operations.IOperationHistoryListener;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,6 +45,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -52,9 +56,11 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 
 import tiled.core.Map;
 import tiled.core.MapChangeListener;
@@ -312,19 +318,37 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			documentProvider = new FileDocumentProvider();
 			documentProvider.connect(input);
 			document = documentProvider.getDocument(input);
+			
+			
 			IAnnotationModel annotationModel = documentProvider.getAnnotationModel(input);
 			if (annotationModel != null)
 				annotationModel.connect(document);
 			if (input instanceof IPathEditorInput) {
 				IPath path = ((IPathEditorInput) input).getPath();
-				System.out.println(path.toOSString());
+				loadMapFromPath(path);
+			} else if (input instanceof FileEditorInput) {
+				IFile file = ResourceUtil.getFile(input);
+				IPath path = file.getLocation(); 
 				currentMap = new TMXMapReader().readMap(
-						new ByteArrayInputStream(document.get().getBytes()),
+						((FileEditorInput) input).getFile().getContents(),
 						path.toFile());
-			} else {
-				currentMap = new TMXMapReader()
-						.readMap(new ByteArrayInputStream(document.get()
-								.getBytes()));
+			} else if (input instanceof IURIEditorInput) {
+				URI uri = ((IURIEditorInput) input).getURI();
+				File mapFile = new File(uri);
+				currentMap = new TMXMapReader().readMap(
+						new ByteArrayInputStream(document.get().getBytes()),mapFile);
+			} else {	
+				IFile file = ResourceUtil.getFile(input);
+				if (file != null) {
+					IPath path = file.getLocation(); 
+					currentMap = new TMXMapReader().readMap(
+							((FileEditorInput) input).getFile().getContents(),
+							path.toFile());
+				} else {
+					currentMap = new TMXMapReader()
+							.readMap(new ByteArrayInputStream(document.get()
+									.getBytes()));
+				}
 			}
 			IActionBars actionBars = getEditorSite().getActionBars();
 			undoAction= new UndoActionHandler(getSite(), undoContext);
@@ -366,6 +390,13 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			statusLineManager = actionBars.getStatusLineManager();
 		}
 		firePropertyChange(IEditorPart.PROP_TITLE);
+	}
+
+	protected void loadMapFromPath(IPath path) throws Exception {
+		System.out.println(path.toOSString());
+		currentMap = new TMXMapReader().readMap(
+				new ByteArrayInputStream(document.get().getBytes()),
+				path.toFile());
 	}
 
 	protected void registerGlobalActionHandlers(IActionBars actionBars) {
