@@ -61,7 +61,6 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-
 import tiled.core.Map;
 import tiled.core.MapChangeListener;
 import tiled.core.MapChangedEvent;
@@ -123,43 +122,43 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 		@Override
 		public void partBroughtToTop(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partClosed(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partDeactivated(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partOpened(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partHidden(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partVisible(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 
 		@Override
 		public void partInputChanged(IWorkbenchPartReference partRef) {
-			// TODO Auto-generated method stub
+			// Do nothing
 			
 		}
 		
@@ -170,8 +169,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			// TODO Auto-generated method stub
-
+			// Do nothing
 		}
 
 		@Override
@@ -191,19 +189,17 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 		@Override
 		public void mouseEnter(MouseEvent e) {
-			// TODO Auto-generated method stub
-
+			// Do nothing
 		}
 
 		@Override
 		public void mouseExit(MouseEvent e) {
-			// TODO Auto-generated method stub
-
+			// Do nothing
 		}
 
 		@Override
 		public void mouseHover(MouseEvent e) {
-			// TODO Auto-generated method stub
+			System.out.println("MapEditor.MapMouseListener.mouseHover()");
 
 		}
 
@@ -264,6 +260,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private BrushPreview brushPreview;
 	private FileDocumentProvider documentProvider;
 	private boolean dirty = false;
+	private boolean snapToGrid = false;
 	private IDocument document;
 	private boolean init;
 	private IOperationHistory operationHistory;
@@ -277,6 +274,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private Action pasteAction;
 
 	private MapLayer clipboardLayer;
+
+	private Point initialObjectLocation;
 
 	
     @Override
@@ -295,10 +294,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			documentProvider.saveDocument(monitor,input,document,true);
 			setDirty(false);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -618,7 +615,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			// tileInstancePropertiesDialog.setSelection(marqueeSelection);
 			// }
 		} else if (currentPointerState == PS_MOVE) {
-			if (layer != null && (moveDist.x != 0 || moveDist.x != 0)) {
+			if (layer != null && (moveDist.x != 0 || moveDist.y != 0)) {
 				 addEdit(new MoveLayerEdit(layer, moveDist));
 			}
 		} else if (currentPointerState == PS_PAINT) {
@@ -626,10 +623,14 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				currentBrush.endPaint();
 			}
 		} else if (currentPointerState == PS_MOVEOBJ) {
-			if (layer instanceof ObjectGroup && currentObject != null
-					&& (moveDist.x != 0 || moveDist.x != 0)) {
-				 addEdit(
-				 new MoveObjectEdit(currentObject, moveDist));
+			if (initialObjectLocation != null && currentObject != null) {
+				Point translation = new Point(currentObject.getX() - initialObjectLocation.x, currentObject.getY() - initialObjectLocation.y);
+				if (layer instanceof ObjectGroup && currentObject != null
+						&& (translation.x != 0 || translation.y != 0)) {
+					 addEdit(
+					 new MoveObjectEdit(currentObject, translation));
+					 initialObjectLocation = null;
+				}
 			}
 		}
 
@@ -696,6 +697,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			paintEdit = null;
 		}
 
+		if (initialObjectLocation != null && currentObject != null) {
+			currentObject.setLocation(initialObjectLocation);
+		}
+		initialObjectLocation = null; 
 		currentObject = null;
 
 		mouseButton = SWT.DEFAULT;
@@ -934,16 +939,22 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 							break;
 						}
 						mouseLastPixelLocation = pos;
+						initialObjectLocation = new Point(currentObject.getX(), currentObject.getY());
 						moveDist = new Point(0, 0);
 						break;
 					}
 					Point translation = new Point(pos.x
 							- mouseLastPixelLocation.x, pos.y
 							- mouseLastPixelLocation.y);
-					currentObject.translate(translation.x, translation.y);
-					moveDist.x += translation.x;
-					moveDist.y += translation.y;
-					mouseLastPixelLocation = pos;
+					
+					if (snapToGrid) {
+						Point tileCoords = mapView.getSnappedVector(pos);
+						currentObject.setX(tileCoords.x);
+						currentObject.setY(tileCoords.y);
+					} else {
+						currentObject.setX(initialObjectLocation.x + translation.x);
+						currentObject.setY(initialObjectLocation.y + translation.y);
+					}
 					mapView.redraw();
 				}
 				break;
@@ -1353,6 +1364,14 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			setCurrentLayer(0);
 		else
 			setCurrentLayer(currentLayer + 1);
+	}
+
+	public boolean isSnapToGrid() {
+		return snapToGrid;
+	}
+
+	public void setSnapToGrid(boolean snapToGrid) {
+		this.snapToGrid = snapToGrid;
 	}
 	
 }

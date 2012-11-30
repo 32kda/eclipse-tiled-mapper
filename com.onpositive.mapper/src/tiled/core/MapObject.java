@@ -18,6 +18,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -143,6 +144,11 @@ public class MapObject implements Cloneable
 
     public void setX(int x) {
         bounds.x = x;
+    }
+    
+    public void setLocation(Point location) {
+    	bounds.x = location.x;
+    	bounds.y = location.y;
     }
 
     public int getY() {

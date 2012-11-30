@@ -532,4 +532,8 @@ public abstract class MapView extends Composite implements PaintListener {
 	public void repaintRegion(Rectangle redraw, Point brushSize) {
 		redraw(redraw.x,redraw.y,redraw.width,redraw.height,true);
 	}
+	
+	public Point getSnappedVector(Point vector) {
+		return vector;
+	}
 }

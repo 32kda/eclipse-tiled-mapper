@@ -19,14 +19,13 @@ import java.util.Properties;
 import javax.swing.SwingConstants;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
-
 
 import tiled.core.Map;
 import tiled.core.MapObject;
@@ -59,8 +58,6 @@ public class OrthoMapView extends MapView
         propPoly.addPoint(0, 0);
         propPoly.addPoint(12, 0);
         propPoly.addPoint(12, 12);
-        
-//        selColor = new Color(parent.getDisplay(),DEFAULT_SEL_COLOR);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -382,4 +379,13 @@ public class OrthoMapView extends MapView
         Point tsize = getTileSize();
         return new Point(x * tsize.x, y * tsize.y);
     }
+    
+	public Point getSnappedVector(Point vector) {
+		Point result = new Point(0,0);
+		Point tsize = getTileSize();
+		result.x = tsize.x * (vector.x / tsize.x);
+		result.y = tsize.y * (vector.y / tsize.y);
+		return result;
+	}
+	
 }

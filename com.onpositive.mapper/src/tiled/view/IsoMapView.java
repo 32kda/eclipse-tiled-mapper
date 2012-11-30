@@ -322,4 +322,10 @@ public class IsoMapView extends MapView
                 ((x - y) * tileSize.x / 2) + originX,
                 ((x + y) * tileSize.y / 2));
     }
+    
+    @Override
+    public Point getSnappedVector(Point vector) {
+    	Point tilePoint = screenToTileCoords(vector.x, vector.y);
+    	return tileToScreenCoords(tilePoint.x, tilePoint.y);
+    }
 }

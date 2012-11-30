@@ -39,6 +39,7 @@
             file="contexts.xml">
       </contexts>
    </extension>
+   
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -150,6 +151,14 @@
                style="radio"
                toolbarPath="normal/additions"
                tooltip="Draw">
+         </action>
+         <action
+               class="com.onpositive.mapper.actions.SnapToGridAction"
+               icon="icons/snap_grid.png"
+               id="com.onpositive.mapper.snapToGridAction"
+               label="Snap To Grid"
+               style="toggle"
+               toolbarPath="mapview">
          </action>
          <action
                class="com.onpositive.mapper.actions.ShowGridAction"
