@@ -533,19 +533,6 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		cursorHighlight.setSelTile(currentTile);
 	}
 
-	// private ColorManager colorManager;
-	//
-	// public MapEditor() {
-	// super();
-	// colorManager = new ColorManager();
-	// setSourceViewerConfiguration(new XMLConfiguration(colorManager));
-	// setDocumentProvider(new XMLDocumentProvider());
-	// }
-	// public void dispose() {
-	// colorManager.dispose();
-	// super.dispose();
-	// }
-
 	public void mousePressed(MouseEvent e) {
 		Point tile = mapView.screenToTileCoords(e.x, e.y);
 		mouseButton = e.button;
@@ -658,8 +645,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				Point translation = new Point(currentObject.getX() - initialObjectLocation.x, currentObject.getY() - initialObjectLocation.y);
 				if (layer instanceof ObjectGroup && currentObject != null
 						&& (translation.x != 0 || translation.y != 0)) {
-					 addEdit(
-					 new MoveObjectEdit(currentObject, translation));
+					 addEdit(new MoveObjectEdit(currentObject, translation));
 					 initialObjectLocation = null;
 				}
 			}

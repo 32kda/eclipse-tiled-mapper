@@ -1,20 +1,29 @@
 package com.onpositive.mapper.dragging;
 
-import static tiled.util.AnchoringUtil.*;
+import static tiled.util.AnchoringUtil.ANCHOR_BOTTOM;
+import static tiled.util.AnchoringUtil.ANCHOR_LB;
+import static tiled.util.AnchoringUtil.ANCHOR_LEFT;
+import static tiled.util.AnchoringUtil.ANCHOR_LT;
+import static tiled.util.AnchoringUtil.ANCHOR_RB;
+import static tiled.util.AnchoringUtil.ANCHOR_RIGHT;
+import static tiled.util.AnchoringUtil.ANCHOR_RT;
+import static tiled.util.AnchoringUtil.ANCHOR_TOP;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import com.onpositive.mapper.editors.MapEditor;
-
 import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.core.MapObject;
 import tiled.core.ObjectGroup;
+import tiled.mapeditor.undo.ResizeObjectEdit;
 import tiled.util.AnchoringUtil;
 import tiled.view.MapView;
+
+import com.onpositive.mapper.editors.MapEditor;
 
 public class ObjectResizeDragger implements IDragger {
 
@@ -128,6 +137,11 @@ public class ObjectResizeDragger implements IDragger {
 
 	@Override
 	public void handleDrag(MouseEvent e) {
+		Rectangle newBounds = getNewBounds(e);
+		targetObject.setBounds(newBounds);
+	}
+
+	protected Rectangle getNewBounds(MouseEvent e) {
 		Point delta = new Point(e.x - initialDragLocation.x, e.y - initialDragLocation.y);
 		int x = initialBounds.x;
 		int y = initialBounds.y;
@@ -143,8 +157,18 @@ public class ObjectResizeDragger implements IDragger {
 			y += delta.y;
 			height -= delta.y;
 		}
-		
-		targetObject.setBounds(new Rectangle(x,y,width,height));
+		if (dragType == ANCHOR_RIGHT || dragType == ANCHOR_RT || dragType == ANCHOR_RB) {
+			if (width + delta.x < 0)
+				delta.x = -width;
+			width += delta.x;
+		}
+		if (dragType == ANCHOR_BOTTOM || dragType == ANCHOR_LB || dragType == ANCHOR_RB) {
+			if (height + delta.y < 0)
+				delta.y = -height;
+			height += delta.y;
+		}
+		Rectangle newBounds = new Rectangle(x,y,width,height);
+		return newBounds;
 	}
 
 	@Override
@@ -154,8 +178,9 @@ public class ObjectResizeDragger implements IDragger {
 
 	@Override
 	public void handleDragFinish(MouseEvent e) {
-		// TODO Always return to initial for now
-		targetObject.setBounds(initialBounds);
+		Rectangle newBounds = getNewBounds(e);
+		mapEditor.addEdit(new ResizeObjectEdit(targetObject, targetObject.getBounds(), newBounds));
+		targetObject.setBounds(newBounds);
 	}
 
 }
