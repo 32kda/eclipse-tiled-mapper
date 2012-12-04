@@ -27,7 +27,7 @@ public class ResizeObjectEdit extends AbstractOperation {
 	@Override
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		// TODO Auto-generated method stub
+		// Do nothing; Necessary changes already done from main code
 		return null;
 	}
 
