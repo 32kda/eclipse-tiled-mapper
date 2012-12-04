@@ -19,7 +19,7 @@ import java.util.Properties;
 import javax.swing.SwingConstants;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -33,6 +33,7 @@ import tiled.core.ObjectGroup;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.util.AnchoringUtil;
 import tiled.util.Converter;
 
 /**
@@ -156,7 +157,9 @@ public class OrthoMapView extends MapView
                 gc.drawImage(objectImage, (int) ox, (int) oy);
             }
 
-            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+            int objWidth = mo.getWidth();
+			int objHeight = mo.getHeight();
+			if (objWidth == 0 || objHeight == 0) {
                 gc.setAntialias(SWT.ON);
                 gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
                 gc.fillOval((int) ox + 1, (int) oy + 1,
@@ -168,19 +171,23 @@ public class OrthoMapView extends MapView
             } else {
                 gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
                 gc.drawRectangle((int) ox + 1, (int) oy + 1,
-                    (int) (mo.getWidth() * zoom),
-                    (int) (mo.getHeight() * zoom));
+                    (int) (objWidth * zoom),
+                    (int) (objHeight * zoom));
                 gc.setForeground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
                 gc.drawRectangle((int) ox, (int) oy,
-                    (int) (mo.getWidth() * zoom),
-                    (int) (mo.getHeight() * zoom));
+                    (int) (objWidth * zoom),
+                    (int) (objHeight * zoom));
             }
             if (zoom > 0.0625) {
+            	if (drawResizeAnchors) {
+            		drawAnchors(gc, ox, oy, objWidth, objHeight);
+            	}
                 final String s = mo.getName() != null ? mo.getName() : "(null)";
                 gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
                 gc.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
                 gc.setForeground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
                 gc.drawString(s, (int) (ox - 5), (int) (oy - 5));
+                
             }
         }
 
@@ -191,6 +198,20 @@ public class OrthoMapView extends MapView
         transform.dispose();
     }
 
+	protected void drawAnchors(GC gc, double ox, double oy, int objWidth,
+			int objHeight) {
+
+		Color oldBackground = gc.getBackground();
+		Rectangle[] anchorRects = AnchoringUtil.getAnchorRects((int) ox,(int) oy,objWidth,objHeight);
+		for (Rectangle rectangle : anchorRects) {
+			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			gc.fillRectangle(rectangle.x + 1, rectangle.y + 1, rectangle.width, rectangle.height);
+			gc.setBackground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
+			gc.fillRectangle(rectangle);
+		}
+		gc.setBackground(oldBackground);
+	}
+	
     protected void paintGrid(GC gc) {
         // Determine tile size
         Point tsize = getTileSize();

@@ -6,7 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 import java.util.Vector;
@@ -34,6 +36,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -90,6 +93,8 @@ import tiled.view.MapView;
 import com.onpositive.mapper.actions.CopyAction;
 import com.onpositive.mapper.actions.PasteAction;
 import com.onpositive.mapper.dialogs.ObjectPropertyDialog;
+import com.onpositive.mapper.dragging.IDragger;
+import com.onpositive.mapper.dragging.ObjectResizeDragger;
 import com.onpositive.mapper.perspective.MapperPerspective;
 import com.onpositive.mapper.ui.UIUtil;
 
@@ -277,6 +282,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	private Point initialObjectLocation;
 
+	private List<IDragger> draggers = new ArrayList<IDragger>();
+	private IDragger currentDragger;
 	
     @Override
 	public void doSave(IProgressMonitor monitor) {
@@ -451,6 +458,11 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				}
 			}
 		});
+		initUIComponents();
+	}
+
+	protected void initUIComponents() {
+		draggers.add(new ObjectResizeDragger(this,mapView));
 	}
 
 	@Override
@@ -1032,11 +1044,17 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		// Update state of mouse buttons
 		bMouseIsDown = e.button > 0;
 		if (bMouseIsDragging) { // Was bMouseIsDown
-			doMouse(e);
+			if (currentDragger != null)
+				currentDragger.handleDrag(e);
+			else
+				doMouse(e);
+		} else {
+			for (IDragger dragger : draggers) {
+				dragger.handleMove(e);
+			}
 		}
 //		if (bMouseIsDown)
 //			mousePressLocation = mapView.screenToTileCoords(e.x, e.y);
-
 		Point tile = mapView.screenToTileCoords(e.x, e.y);
 		updateTileCoordsLabel(tile);
 		updateCursorHighlight(tile);
@@ -1153,8 +1171,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				firePartPropertyChanged(CURRENT_LAYER_PROP, "" + oldCurLayer,
 						"" + currentLayer);
 				mapView.setCurrentLayer(currentLayer);
-				// layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
-				// false, false);
+				if (currentMap.getLayer(index) instanceof ObjectGroup)
+					setCurrentPointerState(PS_MOVEOBJ);
+				else
+					setCurrentPointerState(PS_PAINT);
 			}
 		}
 	}
@@ -1187,33 +1207,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
         if (needBrushReset(state))
         	resetBrush();
         firePartPropertyChanged(POINTER_STATE_PROP,"" + oldState,"" + currentPointerState);
-
-        // Select the matching button  //TODO
-//        paintButton.setSelected(state == PS_PAINT);
-//        eraseButton.setSelected(state == PS_ERASE);
-//        pourButton.setSelected(state == PS_POUR);
-//        eyedButton.setSelected(state == PS_EYED);
-//        marqueeButton.setSelected(state == PS_MARQUEE);
-//        moveButton.setSelected(state == PS_MOVE);
-//        objectAddButton.setSelected(state == PS_ADDOBJ);
-//        objectRemoveButton.setSelected(state == PS_REMOVEOBJ);
-//        objectMoveButton.setSelected(state == PS_MOVEOBJ);
-
-        // Set the matching cursor //TODO
-//        if (mapView != null) {
-//            switch (currentPointerState) {
-//                case PS_PAINT:
-//                case PS_ERASE:
-//                case PS_POINT:
-//                case PS_POUR:
-//                case PS_MARQUEE:
-//                    mapView.setCursor(curDefault);
-//                    break;
-//                case PS_EYED:
-//                    mapView.setCursor(curEyed);
-//                    break;
-//            }
-//        }
+        mapView.redraw();
     }
     
     protected boolean needBrushReset(int state) {

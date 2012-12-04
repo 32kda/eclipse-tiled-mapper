@@ -12,13 +12,11 @@
 
 package tiled.view;
 
+import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.Iterator;
-import javax.swing.JPanel;
-import javax.swing.Scrollable;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -29,11 +27,15 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 
-import com.onpositive.mapper.editors.MapEditor;
-
-import tiled.core.*;
+import tiled.core.Map;
+import tiled.core.MapLayer;
+import tiled.core.MultilayerPlane;
+import tiled.core.ObjectGroup;
+import tiled.core.TileLayer;
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
+
+import com.onpositive.mapper.editors.MapEditor;
 
 /**
  * The base class for map views. This is meant to be extended for different tile
@@ -46,7 +48,7 @@ public abstract class MapView extends Composite implements PaintListener {
 	public static final int PF_BOUNDARYMODE = 0x02;
 	public static final int PF_COORDINATES = 0x04;
 	public static final int PF_NOSPECIAL = 0x08;
-
+	
 	public static int ZOOM_NORMALSIZE = 5;
 
 	protected Map map;
@@ -78,6 +80,8 @@ public abstract class MapView extends Composite implements PaintListener {
 	protected Color defaultGridColor;
 	protected int pointerState;
 	private int currentLayer = 0;
+	
+	protected boolean drawResizeAnchors = true;
 
 	/**
 	 * Creates a new <code>MapView</code> that displays the specified map.
@@ -286,7 +290,7 @@ public abstract class MapView extends Composite implements PaintListener {
 		paintSubMap(map, gc, 1.0f);
 
 		if (!getMode(PF_NOSPECIAL)) {
-			Iterator li = map.getLayersSpecial();
+			Iterator<?> li = map.getLayersSpecial();
 
 			while (li.hasNext()) {
 				layer = (MapLayer) li.next();
@@ -359,7 +363,7 @@ public abstract class MapView extends Composite implements PaintListener {
 	}
 
 	public void paintSubMap(MultilayerPlane m, GC gc, float mapOpacity) {
-		Iterator li = m.getLayers();
+		Iterator<?> li = m.getLayers();
 		MapLayer layer;
 
 		while (li.hasNext()) {
@@ -508,6 +512,7 @@ public abstract class MapView extends Composite implements PaintListener {
 
 	public void setCurrentPointerState(int pointerState) {
 		this.pointerState = pointerState;
+		drawResizeAnchors = pointerState == MapEditor.PS_MOVEOBJ;
 	}
 
 	protected boolean shouldPaintBrushTile() {
@@ -535,5 +540,21 @@ public abstract class MapView extends Composite implements PaintListener {
 	
 	public Point getSnappedVector(Point vector) {
 		return vector;
+	}
+
+	public Map getMap() {
+		return map;
+	}
+
+	public int getCurrentLayer() {
+		return currentLayer;
+	}
+
+	public boolean isDrawResizeAnchors() {
+		return drawResizeAnchors;
+	}
+
+	public void setDrawResizeAnchors(boolean drawResizeAnchors) {
+		this.drawResizeAnchors = drawResizeAnchors;
 	}
 }

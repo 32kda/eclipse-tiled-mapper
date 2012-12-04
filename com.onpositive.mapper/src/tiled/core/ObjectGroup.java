@@ -181,6 +181,13 @@ public class ObjectGroup extends MapLayer
         }
         return null;
     }
+    
+    public Rectangle getActualObjectRectangle(MapObject obj) {
+    	 Rectangle rect = new Rectangle(obj.getX() + bounds.x * myMap.getTileWidth(),
+                 obj.getY() + bounds.y * myMap.getTileHeight(),
+                 obj.getWidth(), obj.getHeight());
+    	 return rect;
+    }
 
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
