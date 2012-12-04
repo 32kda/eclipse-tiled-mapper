@@ -36,7 +36,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -64,6 +63,7 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
+
 import tiled.core.Map;
 import tiled.core.MapChangeListener;
 import tiled.core.MapChangedEvent;
@@ -204,8 +204,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 		@Override
 		public void mouseHover(MouseEvent e) {
-			System.out.println("MapEditor.MapMouseListener.mouseHover()");
-
+			// Do nothing
 		}
 
 	};
@@ -562,6 +561,15 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			// Remember screen location for scrolling with middle mouse button
 			mouseInitialScreenLocation = new Point(e.x, e.y);
 		} else if (mouseButton == 1) {
+			for (IDragger dragger: draggers) {
+				if (dragger.canStartDrag(e)) {
+					dragger.handleDragStart(e);
+					currentDragger = dragger;
+					bMouseIsDragging = true;
+					return;
+				}
+			} 
+			
 			switch (currentPointerState) {
 			case PS_PAINT:
 				if (layer instanceof TileLayer) {
@@ -611,6 +619,17 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public void mouseReleased(MouseEvent event) {
 		final MapLayer layer = getCurrentLayer();
 		final Point limp = mouseInitialPressLocation;
+		
+		if (event.button == 1 && currentDragger != null) {
+			currentDragger.handleDragFinish(event);
+			currentDragger = null;
+
+			mouseButton = SWT.DEFAULT;
+			bMouseIsDown = false;
+			bMouseIsDragging = false;
+			mapView.redraw();
+			return;
+		}
 
 		if (currentPointerState == PS_MARQUEE) {
 			// Uncommented to allow single tile selections
@@ -1044,9 +1063,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		// Update state of mouse buttons
 		bMouseIsDown = e.button > 0;
 		if (bMouseIsDragging) { // Was bMouseIsDown
-			if (currentDragger != null)
+			if (currentDragger != null) {
 				currentDragger.handleDrag(e);
-			else
+				mapView.redraw();
+			} else
 				doMouse(e);
 		} else {
 			for (IDragger dragger : draggers) {
