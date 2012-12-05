@@ -14,10 +14,6 @@ package com.onpositive.mapper.actions;
 
 import java.text.MessageFormat;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
-
-import com.onpositive.mapper.editors.MapEditor;
-
 import tiled.core.Map;
 import tiled.core.MapLayer;
 import tiled.mapeditor.resources.Resources;

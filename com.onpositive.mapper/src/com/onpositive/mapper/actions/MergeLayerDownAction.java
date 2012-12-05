@@ -12,12 +12,7 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
-
 import tiled.core.Map;
-import tiled.mapeditor.resources.Resources;
-
-import com.onpositive.mapper.editors.MapEditor;
 
 /**
  * Merges the current layer with the one below and selects the merged layer.

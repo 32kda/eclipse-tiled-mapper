@@ -12,12 +12,8 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
-
 import tiled.core.Map;
-import tiled.mapeditor.resources.Resources;
-
-import com.onpositive.mapper.editors.MapEditor;
+import tiled.core.MapLayer;
 
 /**
  * Adds a layer to the current map and selects it.
@@ -26,17 +22,13 @@ import com.onpositive.mapper.editors.MapEditor;
  */
 public class AddLayerAction extends AbstractLayerAction
 {
-//    public AddLayerAction(ISelectionProvider provider, MapEditor editor) {
-//        super(provider,
-//              editor,
-//              Resources.getString("action.layer.add.name"),
-//              Resources.getString("action.layer.add.tooltip"), Resources.getImageDescriptor("gnome-new.png"));
-//    }
 
     protected void doPerformAction() {
         Map currentMap = editor.getMap();
-        currentMap.addLayer();
+        MapLayer newLayer = currentMap.addLayer();
         editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
+        if (viewer != null)
+        	viewer.editElement(newLayer,0);
     }
     
     @Override

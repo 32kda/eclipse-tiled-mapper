@@ -14,6 +14,7 @@ package com.onpositive.mapper.actions;
 
 
 import tiled.core.Map;
+import tiled.core.MapLayer;
 
 /**
  * Adds a object group layer to the current map and selects it.
@@ -31,8 +32,10 @@ public class AddObjectGroupAction extends AbstractLayerAction
 
     protected void doPerformAction() {
         Map currentMap = editor.getMap();
-        currentMap.addObjectGroup();
+        MapLayer newGroup = currentMap.addObjectGroup();
         editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
+        if (viewer != null)
+        	viewer.editElement(newGroup,0);
     }
     
     @Override

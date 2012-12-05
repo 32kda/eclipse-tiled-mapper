@@ -12,12 +12,7 @@
 
 package com.onpositive.mapper.actions;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
-
-import com.onpositive.mapper.editors.MapEditor;
-
 import tiled.core.Map;
-import tiled.mapeditor.resources.Resources;
 
 /**
  * Deletes the selected layer and selects the layer that takes the same index.

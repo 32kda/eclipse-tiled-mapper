@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.SelectionProviderAction;
@@ -56,6 +57,9 @@ public class LayerViewAction extends SelectionProviderAction
         layerAction.setDescription(description);
         layerAction.setText(name);
         layerAction.setActiveEditor(layerAction,editor);
+        if (provider instanceof ColumnViewer) {
+        	layerAction.setLayerViewer((ColumnViewer)provider);
+        }
         setEnabled(layerAction.calcEnabled());
     }
 

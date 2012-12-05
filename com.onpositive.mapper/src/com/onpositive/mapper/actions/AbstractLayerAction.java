@@ -3,10 +3,10 @@ package com.onpositive.mapper.actions;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
-
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
@@ -36,6 +36,8 @@ public abstract class AbstractLayerAction extends Action implements
 	protected MapEditor editor;
 
 	protected IAction action;
+
+	protected ColumnViewer viewer;
 
 	@Override
 	public void run(IAction action) {
@@ -97,5 +99,9 @@ public abstract class AbstractLayerAction extends Action implements
      * Actually performs the action that modifies the layer configuration.
      */
     protected abstract void doPerformAction();
+
+	public void setLayerViewer(ColumnViewer viewer) {
+		this.viewer = viewer;
+	}
 
 }

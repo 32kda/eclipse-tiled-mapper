@@ -13,14 +13,10 @@
 package com.onpositive.mapper.actions;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
-
-import com.onpositive.mapper.editors.MapEditor;
 
 import tiled.core.Map;
 import tiled.core.TileLayer;
-import tiled.mapeditor.resources.Resources;
 import tiled.util.TileMergeHelper;
 
 /**
