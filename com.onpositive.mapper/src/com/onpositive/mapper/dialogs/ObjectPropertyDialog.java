@@ -1,6 +1,5 @@
 package com.onpositive.mapper.dialogs;
 
-import java.util.Comparator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -48,6 +47,11 @@ import tiled.util.Util;
 import com.onpositive.mapper.editors.ILocalUndoSupport;
 import com.onpositive.mapper.views.DblClickActivationStrategy;
 
+/**
+ * Dialog foe editing object properties
+ * @author 32kda
+ *
+ */
 public class ObjectPropertyDialog extends Dialog {
 
 	private static final String NAME_PROP = "Name";
@@ -127,7 +131,7 @@ public class ObjectPropertyDialog extends Dialog {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO Auto-generated method stub
+			// Column images not supported yet
 			return null;
 		}
 
@@ -154,11 +158,15 @@ public class ObjectPropertyDialog extends Dialog {
 	private Text imageSourceText;
 	private Spinner widthSpinner;
 	private Spinner heightSpinner;
+	private final int tileWidth;
+	private final int tileHeight;
 
-	public ObjectPropertyDialog(Shell parentShell, MapObject mapObject, ILocalUndoSupport undoSupport) {
+	public ObjectPropertyDialog(Shell parentShell, MapObject mapObject, ILocalUndoSupport undoSupport, int tileWidth, int tileHeight) {
 		super(parentShell);
 		this.mapObject = mapObject;
 		this.undoSupport = undoSupport;
+		this.tileWidth = tileWidth;
+		this.tileHeight = tileHeight;
 	}
 	
 	@Override
@@ -218,11 +226,16 @@ public class ObjectPropertyDialog extends Dialog {
 		createLabel(composite,"Width:");
 		widthSpinner = new Spinner(composite,SWT.SINGLE | SWT.BORDER);
 		widthSpinner.setMinimum(0);
+		widthSpinner.setMaximum(Integer.MAX_VALUE);
+		widthSpinner.setIncrement(tileWidth);
+		
 		widthSpinner.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
 
 		createLabel(composite,"Height:");
 		heightSpinner = new Spinner(composite,SWT.SINGLE | SWT.BORDER);
 		heightSpinner.setMinimum(0);
+		heightSpinner.setMaximum(Integer.MAX_VALUE);
+		heightSpinner.setIncrement(tileHeight);
 		heightSpinner.setLayoutData(new GridData(SWT.FILL,SWT.CENTER,true,false));
 
 		final Table table = new Table(composite, SWT.FULL_SELECTION | SWT.BORDER);
