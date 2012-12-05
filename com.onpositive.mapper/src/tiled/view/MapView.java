@@ -541,6 +541,14 @@ public abstract class MapView extends Composite implements PaintListener {
 	public Point getSnappedVector(Point vector) {
 		return vector;
 	}
+	
+	public int getSnappedScalarX(int scalar) {
+		return scalar;
+	}
+	
+	public int getSnappedScalarY(int scalar) {
+		return scalar;
+	}
 
 	public Map getMap() {
 		return map;

@@ -18,7 +18,7 @@ public class ResizeObjectEdit extends AbstractOperation {
 	private final Rectangle newBounds;
 
 	public ResizeObjectEdit(MapObject mapObject, Rectangle oldBounds, Rectangle newBounds) {
-		super(Resources.getString("action.object.move.name"));
+		super(Resources.getString("action.object.resize.name"));
 		this.mapObject = mapObject;
 		this.oldBounds = oldBounds;
 		this.newBounds = newBounds;

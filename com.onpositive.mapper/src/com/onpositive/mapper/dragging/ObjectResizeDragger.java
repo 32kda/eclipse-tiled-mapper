@@ -168,6 +168,21 @@ public class ObjectResizeDragger implements IDragger {
 			height += delta.y;
 		}
 		Rectangle newBounds = new Rectangle(x,y,width,height);
+		if (mapEditor.isSnapToGrid()) {
+			if (dragType == ANCHOR_LEFT || dragType == ANCHOR_LT || dragType == ANCHOR_LB) {
+				newBounds.x = mapView.getSnappedScalarX(newBounds.x);
+				newBounds.width = initialBounds.x + initialBounds.width - newBounds.x;
+			} else if (dragType == ANCHOR_RIGHT || dragType == ANCHOR_RT || dragType == ANCHOR_RB) {
+				newBounds.width = mapView.getSnappedScalarX(newBounds.width);
+			}
+			
+			if (dragType == ANCHOR_TOP || dragType == ANCHOR_LT || dragType == ANCHOR_RT) {
+				newBounds.y = mapView.getSnappedScalarY(newBounds.y);
+				newBounds.height = initialBounds.y + initialBounds.height - newBounds.y;
+			} else if (dragType == ANCHOR_BOTTOM || dragType == ANCHOR_LB || dragType == ANCHOR_RB) {
+				newBounds.height = mapView.getSnappedScalarX(newBounds.height);
+			}
+		}
 		return newBounds;
 	}
 
@@ -179,8 +194,10 @@ public class ObjectResizeDragger implements IDragger {
 	@Override
 	public void handleDragFinish(MouseEvent e) {
 		Rectangle newBounds = getNewBounds(e);
-		mapEditor.addEdit(new ResizeObjectEdit(targetObject, targetObject.getBounds(), newBounds));
-		targetObject.setBounds(newBounds);
+		if (!newBounds.equals(initialBounds)) {
+			mapEditor.addEdit(new ResizeObjectEdit(targetObject, initialBounds, newBounds));
+			targetObject.setBounds(newBounds);
+		}
 	}
 
 }

@@ -203,10 +203,14 @@ public class OrthoMapView extends MapView
 
 		Color oldBackground = gc.getBackground();
 		Rectangle[] anchorRects = AnchoringUtil.getAnchorRects((int) ox,(int) oy,objWidth,objHeight);
-		for (Rectangle rectangle : anchorRects) {
+		for (int i = 0; i < anchorRects.length; i++) {
+			Rectangle rectangle = anchorRects[i];
 			gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
 			gc.fillRectangle(rectangle.x + 1, rectangle.y + 1, rectangle.width, rectangle.height);
-			gc.setBackground(getDisplay().getSystemColor(OBJECT_FOREGROUND));
+			if (i == AnchoringUtil.ANCHOR_LEFT || i == AnchoringUtil.ANCHOR_TOP || i == AnchoringUtil.ANCHOR_RIGHT || i == AnchoringUtil.ANCHOR_BOTTOM)
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+			else
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_RED));
 			gc.fillRectangle(rectangle);
 		}
 		gc.setBackground(oldBackground);
@@ -401,12 +405,23 @@ public class OrthoMapView extends MapView
         return new Point(x * tsize.x, y * tsize.y);
     }
     
+    @Override
 	public Point getSnappedVector(Point vector) {
 		Point result = new Point(0,0);
 		Point tsize = getTileSize();
 		result.x = tsize.x * (vector.x / tsize.x);
 		result.y = tsize.y * (vector.y / tsize.y);
 		return result;
+	}
+	
+	public int getSnappedScalarX(int scalar) {
+		Point tsize = getTileSize();
+		return tsize.x * (scalar / tsize.x);
+	}
+	
+	public int getSnappedScalarY(int scalar) {
+		Point tsize = getTileSize();
+		return tsize.y * (scalar / tsize.y);
 	}
 	
 }
