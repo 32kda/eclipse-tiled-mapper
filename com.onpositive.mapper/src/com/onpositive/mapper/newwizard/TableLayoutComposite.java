@@ -51,7 +51,7 @@ public class TableLayoutComposite extends Composite {
             COLUMN_TRIM = 3;
     }
 
-    private List columns = new ArrayList();
+    private List<ColumnLayoutData> columns = new ArrayList<ColumnLayoutData>();
 
     /**
      * Creates a new <code>TableLayoutComposite</code>.

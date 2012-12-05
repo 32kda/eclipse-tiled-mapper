@@ -42,7 +42,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import tiled.core.TileSet;
-import tiled.io.TMXMapWriter;
 import tiled.util.Util;
 
 import com.onpositive.mapper.dialogs.NewTilesetDialog;

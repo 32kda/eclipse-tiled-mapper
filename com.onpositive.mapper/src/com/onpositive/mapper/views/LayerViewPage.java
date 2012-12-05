@@ -333,21 +333,25 @@ public class LayerViewPage extends Page {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
+		manager.add(addLayerAction);
+		manager.add(addObjectGroupAction);
+		manager.add(new Separator());
 		manager.add(moveUpAction);
 		manager.add(moveDownAction);
 		manager.add(mergeDownAction);
 		manager.add(deleteLayerAction);
 		manager.add(cloneLayerAction);
-		// Other plug-ins can contribute there actions here
+		// Other plug-ins can contribute their actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
+		manager.add(addLayerAction);
+		manager.add(addObjectGroupAction);
+		manager.add(new Separator());
 		manager.add(moveUpAction);
 		manager.add(moveDownAction);
 		manager.add(mergeDownAction);
-		manager.add(addLayerAction);
-		manager.add(addObjectGroupAction);
 		manager.add(deleteLayerAction);
 		manager.add(cloneLayerAction);
 	}
@@ -390,14 +394,6 @@ public class LayerViewPage extends Page {
 		
 	}
 
-//	private void hookDoubleClickAction() {
-//		viewer.addDoubleClickListener(new IDoubleClickListener() {
-//			public void doubleClick(DoubleClickEvent event) {
-//				doubleClickAction.run();
-//			}
-//		});
-//	}
-	
 	private void showMessage(String message) {
 		MessageDialog.openInformation(
 			viewer.getControl().getShell(),
