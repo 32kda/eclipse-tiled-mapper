@@ -84,7 +84,7 @@ public class ListDialogField extends DialogField {
     protected Control fTableControl;
     protected ILabelProvider fLabelProvider;
     protected ListViewerAdapter fListViewerAdapter;
-    protected List fElements;
+    protected List<Object> fElements;
     protected ViewerComparator fViewerComparator;
 
     protected String[] fButtonLabels;
@@ -124,7 +124,7 @@ public class ListDialogField extends DialogField {
         fListViewerAdapter = new ListViewerAdapter();
         fParentElement = this ;
 
-        fElements = new ArrayList(10);
+        fElements = new ArrayList<Object>(10);
 
         fButtonLabels = buttonLabels;
         if (fButtonLabels != null) {
@@ -554,8 +554,8 @@ public class ListDialogField extends DialogField {
     /**
      * Sets the elements shown in the list.
      */
-    public void setElements(Collection elements) {
-        fElements = new ArrayList(elements);
+    public void setElements(Collection<Object> elements) {
+        fElements = new ArrayList<Object>(elements);
         if (isOkToUse(fTableControl)) {
             fTable.refresh();
         }
@@ -566,8 +566,8 @@ public class ListDialogField extends DialogField {
      * Gets the elements shown in the list.
      * The list returned is a copy, so it can be modified by the user.
      */
-    public List getElements() {
-        return new ArrayList(fElements);
+    public List<Object> getElements() {
+        return new ArrayList<Object>(fElements);
     }
 
     /**
@@ -593,7 +593,7 @@ public class ListDialogField extends DialogField {
         if (idx != -1) {
             fElements.set(idx, newElement);
             if (isOkToUse(fTableControl)) {
-                List selected = getSelectedElements();
+                List<Object> selected = getSelectedElements();
                 if (selected.remove(oldElement)) {
                     selected.add(newElement);
                 }
@@ -648,13 +648,13 @@ public class ListDialogField extends DialogField {
     /**
      * Adds elements at the given index
      */
-    public boolean addElements(List elements, int index) {
+    public boolean addElements(List<?> elements, int index) {
 
         int nElements = elements.size();
 
         if (nElements > 0 && index >= 0 && index <= fElements.size()) {
             // filter duplicated
-            ArrayList elementsToAdd = new ArrayList(nElements);
+            ArrayList<Object> elementsToAdd = new ArrayList<Object>(nElements);
 
             for (int i = 0; i < nElements; i++) {
                 Object elem = elements.get(i);
@@ -685,7 +685,7 @@ public class ListDialogField extends DialogField {
     /**
      * Adds elements at the end of the list.
      */
-    public boolean addElements(List elements) {
+    public boolean addElements(List<?> elements) {
         return addElements(elements, fElements.size());
     }
 
@@ -720,7 +720,7 @@ public class ListDialogField extends DialogField {
     /**
      * Removes elements from the list.
      */
-    public void removeElements(List elements) {
+    public void removeElements(List<Object> elements) {
         if (elements.size() > 0) {
             fElements.removeAll(elements);
             if (isOkToUse(fTableControl)) {
@@ -794,9 +794,9 @@ public class ListDialogField extends DialogField {
 
     // ------- list maintenance
 
-    private List moveUp(List elements, List move) {
+    private List<Object> moveUp(List<Object> elements, List<Object> move) {
         int nElements = elements.size();
-        List res = new ArrayList(nElements);
+        List<Object> res = new ArrayList<Object>(nElements);
         Object floating = null;
         for (int i = 0; i < nElements; i++) {
             Object curr = elements.get(i);
@@ -815,22 +815,22 @@ public class ListDialogField extends DialogField {
         return res;
     }
 
-    private void moveUp(List toMoveUp) {
+    private void moveUp(List<Object> toMoveUp) {
         if (toMoveUp.size() > 0) {
             setElements(moveUp(fElements, toMoveUp));
             fTable.reveal(toMoveUp.get(0));
         }
     }
 
-    private void moveDown(List toMoveDown) {
+    private void moveDown(List<Object> toMoveDown) {
         if (toMoveDown.size() > 0) {
             setElements(reverse(moveUp(reverse(fElements), toMoveDown)));
             fTable.reveal(toMoveDown.get(toMoveDown.size() - 1));
         }
     }
 
-    private List reverse(List p) {
-        List reverse = new ArrayList(p.size());
+    private List<Object> reverse(List<Object> p) {
+        List<Object> reverse = new ArrayList<Object>(p.size());
         for (int i = p.size() - 1; i >= 0; i--) {
             reverse.add(p.get(i));
         }
@@ -877,12 +877,12 @@ public class ListDialogField extends DialogField {
     /**
      * Returns the selected elements.
      */
-    public List getSelectedElements() {
-        List result = new ArrayList();
+    public List<Object> getSelectedElements() {
+        List<Object> result = new ArrayList<Object>();
         if (isOkToUse(fTableControl)) {
             ISelection selection = fTable.getSelection();
             if (selection instanceof  IStructuredSelection) {
-                Iterator iter = ((IStructuredSelection) selection)
+                Iterator<?> iter = ((IStructuredSelection) selection)
                         .iterator();
                 while (iter.hasNext()) {
                     result.add(iter.next());
