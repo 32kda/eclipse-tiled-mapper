@@ -811,6 +811,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 					ObjectPropertyDialog dialog = new ObjectPropertyDialog(
 							getSite().getShell(), obj, this, tileWidth, tileHeight);
 					dialog.open();
+					mapView.redraw();
 				}
 			}
 		} else if (mouseButton == 2
