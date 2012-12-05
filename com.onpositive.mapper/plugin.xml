@@ -74,6 +74,14 @@
             id="com.onpositive.mapper.mapEditorContribution"
             targetID="com.onpositive.mapper.editors.MapEditor">
          <action
+               class="com.onpositive.mapper.actions.ResizeObjectPointerStateAction"
+               icon="icons/object-resize-16.png"
+               id="com.onpositive.mapper.resizeObjAction"
+               label="Move&amp;Resize Object"
+               style="toggle"
+               toolbarPath="mapobjects">
+         </action>
+         <action
                class="com.onpositive.mapper.actions.MoveObjectPointerStateAction"
                icon="icons/object-move-16.png"
                id="com.onpositive.mapper.moveObjAction"

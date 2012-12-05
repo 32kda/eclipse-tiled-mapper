@@ -43,7 +43,7 @@ public class ObjectResizeDragger implements IDragger {
 
 	@Override
 	public void handleMove(MouseEvent e) {
-		if (mapEditor.getCurrentPointerState() != MapEditor.PS_MOVEOBJ)
+		if (mapEditor.getCurrentPointerState() != MapEditor.PS_RESIZEOBJ)
 			return;
 		MapLayer layer = map.getLayer(mapView.getCurrentLayer());
 		mapView.setCursor(Display.getDefault()
@@ -95,7 +95,7 @@ public class ObjectResizeDragger implements IDragger {
 
 	@Override
 	public boolean canStartDrag(MouseEvent e) {
-		if (mapEditor.getCurrentPointerState() != MapEditor.PS_MOVEOBJ)
+		if (mapEditor.getCurrentPointerState() != MapEditor.PS_RESIZEOBJ)
 			return false;
 		MapLayer layer = map.getLayer(mapView.getCurrentLayer());
 		if (layer instanceof ObjectGroup) {

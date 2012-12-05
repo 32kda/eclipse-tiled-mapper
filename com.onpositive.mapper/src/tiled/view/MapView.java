@@ -512,7 +512,7 @@ public abstract class MapView extends Composite implements PaintListener {
 
 	public void setCurrentPointerState(int pointerState) {
 		this.pointerState = pointerState;
-		drawResizeAnchors = pointerState == MapEditor.PS_MOVEOBJ;
+		drawResizeAnchors = pointerState == MapEditor.PS_RESIZEOBJ;
 	}
 
 	protected boolean shouldPaintBrushTile() {
