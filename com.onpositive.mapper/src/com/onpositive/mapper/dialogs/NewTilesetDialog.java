@@ -23,6 +23,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+
+import com.onpositive.mapper.editors.MapEditor;
+import com.onpositive.mapper.ui.UIUtil;
 
 import tiled.core.TileSet;
 import tiled.mapeditor.resources.Resources;
@@ -112,6 +116,9 @@ public class NewTilesetDialog extends Dialog {
 		        		"images (*.bmp;*.png)", 
 		        		"All files (*.*)" 
 		        });
+		        String filterPath = getFilterPath();
+		        if (!filterPath.isEmpty())
+		        	dialog.setFilterPath(filterPath);
 		        dialog.open();
 		        String path = dialog.getFilterPath();
 		        String fileName = dialog.getFileName();
@@ -147,6 +154,14 @@ public class NewTilesetDialog extends Dialog {
 		
 	}
 	
+	protected String getFilterPath() {
+		IEditorPart activeEditor = UIUtil.getActiveEditor();
+		if (activeEditor instanceof MapEditor) {
+			return ((MapEditor) activeEditor).getBasePath();
+		}
+		return null;
+	}
+
 	@Override
 	protected void okPressed() {
 		margin = marginSpinner.getSelection();

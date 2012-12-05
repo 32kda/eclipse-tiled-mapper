@@ -225,6 +225,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public static final int PS_ADDOBJ = 7;
 	public static final int PS_REMOVEOBJ = 8;
 	public static final int PS_MOVEOBJ = 9;
+	public static final int PS_RESIZEOBJ = 10;
 
 	private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
 	private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
@@ -283,6 +284,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	private List<IDragger> draggers = new ArrayList<IDragger>();
 	private IDragger currentDragger;
+
+	private String basePath = "";
 	
     @Override
 	public void doSave(IProgressMonitor monitor) {
@@ -329,12 +332,14 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			if (input instanceof IPathEditorInput) {
 				IPath path = ((IPathEditorInput) input).getPath();
 				loadMapFromPath(path);
+				setBasePathFrom(path.toFile());
 			} else if (input instanceof FileEditorInput) {
 				IFile file = ResourceUtil.getFile(input);
 				IPath path = file.getLocation(); 
 				currentMap = new TMXMapReader().readMap(
 						((FileEditorInput) input).getFile().getContents(),
 						path.toFile());
+				setBasePathFrom(path.toFile());
 			} else if (input instanceof IURIEditorInput) {
 				URI uri = ((IURIEditorInput) input).getURI();
 				File mapFile = new File(uri);
@@ -393,6 +398,11 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 			statusLineManager = actionBars.getStatusLineManager();
 		}
 		firePropertyChange(IEditorPart.PROP_TITLE);
+	}
+
+	protected void setBasePathFrom(File file) {
+		if (file.getParent() != null)
+			basePath = file.getParent();
 	}
 
 	protected void loadMapFromPath(IPath path) throws Exception {
@@ -1179,10 +1189,12 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				firePartPropertyChanged(CURRENT_LAYER_PROP, "" + oldCurLayer,
 						"" + currentLayer);
 				mapView.setCurrentLayer(currentLayer);
-				if (currentMap.getLayer(index) instanceof ObjectGroup)
-					setCurrentPointerState(PS_MOVEOBJ);
-				else
-					setCurrentPointerState(PS_PAINT);
+				if (!isValidNewState(getCurrentPointerState())) {
+					if (currentMap.getLayer(index) instanceof ObjectGroup)
+						setCurrentPointerState(PS_MOVEOBJ);
+					else
+						setCurrentPointerState(PS_PAINT);
+				}
 			}
 		}
 	}
@@ -1277,7 +1289,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private boolean isValidNewState(int state) {
 		if (isObjectLayerActive() && (state == PS_PAINT || state == PS_MOVE || state == PS_ERASE))
 			return false;
-		if (!isObjectLayerActive() && (state == PS_ADDOBJ || state == PS_MOVEOBJ || state == PS_REMOVEOBJ))
+		if (!isObjectLayerActive() && (state == PS_ADDOBJ || state == PS_MOVEOBJ || state == PS_REMOVEOBJ || state == PS_RESIZEOBJ))
 			return false;
 		return true;
 	}
@@ -1374,6 +1386,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	public void setSnapToGrid(boolean snapToGrid) {
 		this.snapToGrid = snapToGrid;
+	}
+
+	public String getBasePath() {
+		return basePath;
 	}
 	
 }
