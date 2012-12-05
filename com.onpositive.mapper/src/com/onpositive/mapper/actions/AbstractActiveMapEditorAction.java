@@ -21,8 +21,15 @@ public abstract class AbstractActiveMapEditorAction implements IEditorActionDele
 		} else
 			editor = null;
 		action.setEnabled(editor != null);
+		if (editor != null) {
+			setActiveState(action,editor);
+		} else {
+			action.setChecked(false);
+		}
 	}
 	
+	protected abstract void setActiveState(IAction action, MapEditor editor);
+
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		//Do nothing

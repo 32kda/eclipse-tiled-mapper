@@ -142,7 +142,7 @@ public abstract class MapView extends Composite implements PaintListener {
 		redraw();
 	}
 
-	public boolean getShowGrid() {
+	public boolean isShowGrid() {
 		return showGrid;
 	}
 

@@ -45,8 +45,10 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IPersistableEditor;
 import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -104,9 +106,14 @@ import com.onpositive.mapper.ui.UIUtil;
  * @author Dmitry Karpenko
  *
  */
-public class MapEditor extends EditorPart implements MapChangeListener, ILocalUndoSupport {
+public class MapEditor extends EditorPart implements MapChangeListener, ILocalUndoSupport, IPersistableEditor {
+
 
 	public static final String CURRENT_LAYER_PROP = "currentLayer";
+	
+	private static final String SHOW_GRID_PROP = "SHOW_GRID_PROP";
+	private static final String SNAP_TO_GRID_PROP = "SNAP_TO_GRID_PROP";
+	private static final String HIGHLIGHT_CURRENT_LAYER_PROP = "HIGHLIGHT_CURRENT_LAYER_PROP";
 	
 	protected static class PartListener implements IPartListener2 {
 		private static final String MAPPER_CONTEXT_ID = "com.onpositive.mapper.context";
@@ -286,6 +293,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private IDragger currentDragger;
 
 	private String basePath = "";
+
+	private IMemento initMemento;
 	
     @Override
 	public void doSave(IProgressMonitor monitor) {
@@ -472,6 +481,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	protected void initUIComponents() {
 		draggers.add(new ObjectResizeDragger(this,mapView));
+		
+		if (initMemento != null) {
+			initEditorState(initMemento);
+		}
 	}
 
 	@Override
@@ -1391,6 +1404,51 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	public String getBasePath() {
 		return basePath;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putInteger(CURRENT_LAYER_PROP, getCurrentLayerIndex());
+		memento.putInteger(POINTER_STATE_PROP, getCurrentPointerState());
+		memento.putBoolean(SHOW_GRID_PROP,mapView.isShowGrid());
+		memento.putBoolean(HIGHLIGHT_CURRENT_LAYER_PROP,mapView.isHighlightSelectedLayer());
+		memento.putBoolean(SNAP_TO_GRID_PROP,isSnapToGrid());
+	}
+
+	@Override
+	public void restoreState(IMemento memento) {
+		if (memento != null) {
+			initMemento = memento;
+		}
+	}
+
+	protected void initEditorState(IMemento memento) {
+		Integer curLayer = memento.getInteger(CURRENT_LAYER_PROP);
+		if (curLayer != null && curLayer < currentMap.getTotalLayers()) {
+			setCurrentLayer(curLayer);
+		}
+		Integer curPointerState = memento.getInteger(POINTER_STATE_PROP);
+		if (curPointerState != null && isValidNewState(curPointerState)) {
+			setCurrentPointerState(curPointerState);
+		}
+		Boolean highlightCurrent = memento.getBoolean(HIGHLIGHT_CURRENT_LAYER_PROP);
+		if (highlightCurrent != null)
+			mapView.setHighlightSelectedLayer(highlightCurrent);
+		Boolean showGrid = memento.getBoolean(SHOW_GRID_PROP);
+		if (showGrid != null)
+			mapView.setShowGrid(showGrid);
+		Boolean snapToGrid = memento.getBoolean(SNAP_TO_GRID_PROP);
+		if (snapToGrid != null)
+			setSnapToGrid(snapToGrid);
+
+	}
+
+	public boolean isShowGrid() {
+		return mapView.isShowGrid();
+	}
+
+	public boolean isHighlightCurrentLayer() {
+		return mapView.isHighlightSelectedLayer();
 	}
 	
 }
