@@ -8,5 +8,10 @@ public class EyedropPointerStateAction extends PointerStateAction {
 	protected int getPointerState() {
 		return MapEditor.PS_EYED;
 	}
+	
+	@Override
+	protected boolean shouldBeEnabled() {
+		return !mapEditor.isObjectLayerActive();
+	}
 
 }

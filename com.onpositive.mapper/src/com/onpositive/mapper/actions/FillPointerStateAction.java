@@ -13,5 +13,10 @@ public class FillPointerStateAction extends PointerStateAction {
 	protected int getPointerState() {
 		return MapEditor.PS_POUR;
 	}
+	
+	@Override
+	protected boolean shouldBeEnabled() {
+		return !mapEditor.isObjectLayerActive();
+	}
 
 }
