@@ -16,8 +16,8 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -103,7 +103,13 @@ public class ObjectGroup extends MapLayer
         // TODO: Figure out what object group should do with this method
     }
 
-    public void copyTo(MapLayer other) {
+    @Override
+	public void maskedCopyFrom(MapLayer other, Rectangle mask) {
+		// TODO: Figure out what object group should do with this method
+		
+	}
+
+	public void copyTo(MapLayer other) {
     	try {
 			if (other instanceof ObjectGroup) {
 				for (MapObject object : objects) {

@@ -258,6 +258,8 @@ public abstract class MapLayer implements Cloneable
     public abstract void copyFrom(MapLayer other);
 
     public abstract void maskedCopyFrom(MapLayer other, Area mask);
+    
+    public abstract void maskedCopyFrom(MapLayer other, Rectangle mask);
 
     public abstract MapLayer createDiff(MapLayer ml);
 

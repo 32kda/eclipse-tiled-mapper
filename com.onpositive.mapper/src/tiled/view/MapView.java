@@ -14,7 +14,9 @@ package tiled.view;
 
 import java.awt.Graphics;
 import java.awt.Polygon;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -36,6 +38,8 @@ import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
 
 import com.onpositive.mapper.editors.MapEditor;
+import com.onpositive.mapper.painting.ISpecialLayerPainter;
+import com.onpositive.mapper.painting.ObjectSelectionLayerPainter;
 
 /**
  * The base class for map views. This is meant to be extended for different tile
@@ -79,6 +83,7 @@ public abstract class MapView extends Composite implements PaintListener {
 	protected Color defaultBgColor;
 	protected Color defaultGridColor;
 	protected int pointerState;
+	protected List<ISpecialLayerPainter> specialLayerPainters = new ArrayList<ISpecialLayerPainter>();
 	private int currentLayer = 0;
 	
 	protected boolean drawResizeAnchors = true;
@@ -248,6 +253,7 @@ public abstract class MapView extends Composite implements PaintListener {
 			mapView = new IsoMapView(parent, p);
 		} else if (orientation == Map.ORIENTATION_ORTHOGONAL) {
 			mapView = new OrthoMapView(parent, p);
+			mapView.addSpecialLayerPainter(new ObjectSelectionLayerPainter());
 		} else if (orientation == Map.ORIENTATION_HEXAGONAL) {
 			mapView = new HexMapView(parent, p);
 		} else if (orientation == Map.ORIENTATION_SHIFTED) {
@@ -303,7 +309,19 @@ public abstract class MapView extends Composite implements PaintListener {
 						gc.setBackground(((SelectionLayer) layer)
 								.getHighlightColor());
 					}
-					paintLayer(gc, (TileLayer) layer);
+					if (layer instanceof TileLayer)
+						paintLayer(gc, (TileLayer) layer);
+					else if (layer instanceof ObjectGroup) {
+						boolean needRegularPaint = true;
+						for (ISpecialLayerPainter painter : specialLayerPainters) {
+							needRegularPaint = needRegularPaint && painter.needRegularPaint(layer);
+						}
+						if (needRegularPaint)
+							paintObjectGroup(gc, (ObjectGroup) layer);
+						for (ISpecialLayerPainter painter : specialLayerPainters) {
+							painter.paintSpecialLayer(gc, layer);
+						}
+					}
 					gc.setAlpha(255);
 				}
 			}
@@ -564,5 +582,13 @@ public abstract class MapView extends Composite implements PaintListener {
 
 	public void setDrawResizeAnchors(boolean drawResizeAnchors) {
 		this.drawResizeAnchors = drawResizeAnchors;
+	}
+	
+	public void addSpecialLayerPainter(ISpecialLayerPainter layerPainter) {
+		specialLayerPainters.add(layerPainter);
+	}
+	
+	public void removeSpecialLayerPainter(ISpecialLayerPainter layerPainter) {
+		specialLayerPainters.remove(layerPainter);
 	}
 }

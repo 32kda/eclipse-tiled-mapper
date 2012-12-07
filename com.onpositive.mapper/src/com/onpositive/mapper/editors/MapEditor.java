@@ -97,6 +97,7 @@ import com.onpositive.mapper.actions.PasteAction;
 import com.onpositive.mapper.dialogs.ObjectPropertyDialog;
 import com.onpositive.mapper.dragging.IDragger;
 import com.onpositive.mapper.dragging.ObjectResizeDragger;
+import com.onpositive.mapper.dragging.ObjectSelectionDragger;
 import com.onpositive.mapper.perspective.MapperPerspective;
 import com.onpositive.mapper.ui.UIUtil;
 
@@ -481,6 +482,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	protected void initUIComponents() {
 		draggers.add(new ObjectResizeDragger(this,mapView));
+		draggers.add(new ObjectSelectionDragger(this));
 		
 		if (initMemento != null) {
 			initEditorState(initMemento);

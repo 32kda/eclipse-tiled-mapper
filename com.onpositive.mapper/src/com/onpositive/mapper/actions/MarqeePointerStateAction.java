@@ -9,9 +9,5 @@ public class MarqeePointerStateAction extends PointerStateAction {
 		return MapEditor.PS_MARQUEE;
 	}
 	
-	@Override
-	protected boolean shouldBeEnabled() {
-		return !mapEditor.isObjectLayerActive();
-	}
 
 }
