@@ -150,6 +150,11 @@ public class MapObject implements Cloneable
     	bounds.x = location.x;
     	bounds.y = location.y;
     }
+    
+    public void setLocation(int x, int y) {
+    	bounds.x = x;
+    	bounds.y = y;
+    }
 
     public int getY() {
         return bounds.y;

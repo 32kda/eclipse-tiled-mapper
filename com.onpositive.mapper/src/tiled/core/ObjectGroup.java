@@ -165,6 +165,10 @@ public class ObjectGroup extends MapLayer
     public Iterator<MapObject> getObjects() {
         return objects.iterator();
     }
+    
+    public int getObjectsCount() {
+    	return objects.size();
+    }
 
     public MapObject getObjectAt(int x, int y) {
         for (MapObject obj : objects) {

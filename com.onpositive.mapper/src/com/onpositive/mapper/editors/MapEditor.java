@@ -86,7 +86,7 @@ import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.undo.AddObjectEdit;
 import tiled.mapeditor.undo.MapLayerEdit;
 import tiled.mapeditor.undo.MoveLayerEdit;
-import tiled.mapeditor.undo.MoveObjectEdit;
+import tiled.mapeditor.undo.MoveObjectsEdit;
 import tiled.mapeditor.widget.BrushPreview;
 import tiled.util.Converter;
 import tiled.util.TiledConfiguration;
@@ -670,7 +670,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				Point translation = new Point(currentObject.getX() - initialObjectLocation.x, currentObject.getY() - initialObjectLocation.y);
 				if (layer instanceof ObjectGroup && currentObject != null
 						&& (translation.x != 0 || translation.y != 0)) {
-					 addEdit(new MoveObjectEdit(currentObject, translation));
+					 addEdit(new MoveObjectsEdit(currentObject, translation));
 					 initialObjectLocation = null;
 				}
 			}
@@ -1451,6 +1451,18 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	public boolean isHighlightCurrentLayer() {
 		return mapView.isHighlightSelectedLayer();
+	}
+
+	public Point getSnappedVector(Point vector) {
+		return mapView.getSnappedVector(vector);
+	}
+
+	public int getSnappedScalarX(int scalar) {
+		return mapView.getSnappedScalarX(scalar);
+	}
+
+	public int getSnappedScalarY(int scalar) {
+		return mapView.getSnappedScalarY(scalar);
 	}
 	
 }
