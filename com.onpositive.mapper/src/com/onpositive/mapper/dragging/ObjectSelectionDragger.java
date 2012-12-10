@@ -50,8 +50,8 @@ public class ObjectSelectionDragger implements IDragger {
 		currentMode = SELECT_MODE;
 		if (clickedSelectionLayer(e)) {
 			currentMode = MOVE_MODE;
-			initialLayerLocation.x = selectionLayer.getBounds().x;
-			initialLayerLocation.y = selectionLayer.getBounds().y;
+			initialLayerLocation.x = selectionLayer.getPixelBounds().x;
+			initialLayerLocation.y = selectionLayer.getPixelBounds().y;
 			selectionLayer.reinitMove();
 		} if (currentMode == SELECT_MODE) {
 			if (selectionLayer != null) {
@@ -59,7 +59,7 @@ public class ObjectSelectionDragger implements IDragger {
 			}
 			selectionLayer = new ObjectSelectionLayer();
 			editor.getMap().addLayerSpecial(selectionLayer);
-			selectionLayer.setBounds(new Rectangle(e.x,e.y,1,1));
+			selectionLayer.setPixelBounds(new Rectangle(e.x,e.y,1,1));
 		}
 	}
 	
@@ -67,7 +67,7 @@ public class ObjectSelectionDragger implements IDragger {
 		Iterator<MapLayer> layersSpecial = editor.getMap().getLayersSpecial();
 		for (Iterator<MapLayer> iterator = layersSpecial; iterator.hasNext();) {
 			MapLayer layer = iterator.next();
-			if (layer == selectionLayer && layer.getBounds().contains(initialDragLocation.x,initialDragLocation.y)) {
+			if (layer == selectionLayer && ((ObjectGroup) layer).getPixelBounds().contains(initialDragLocation.x,initialDragLocation.y)) {
 				return true;
 			}
 		}
@@ -84,10 +84,10 @@ public class ObjectSelectionDragger implements IDragger {
 				translation = editor.getSnappedVector(translation);
 			}
 			selectionLayer.moveObjects(translation);
-			Rectangle bounds = selectionLayer.getBounds();
+			Rectangle bounds = selectionLayer.getPixelBounds();
 			bounds.x = initialLayerLocation.x + translation.x;
 			bounds.y = initialLayerLocation.y + translation.y;
-			selectionLayer.setBounds(bounds);
+			selectionLayer.setPixelBounds(bounds);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class ObjectSelectionDragger implements IDragger {
 			y = Math.max(0,y+height);
 			height = -height;
 		}
-		selectionLayer.setBounds(new Rectangle(x,y,width,height));
+		selectionLayer.setPixelBounds(new Rectangle(x,y,width,height));
 	}
 
 	@Override
@@ -116,13 +116,13 @@ public class ObjectSelectionDragger implements IDragger {
 	public void handleDragFinish(MouseEvent e) {
 		if (currentMode == SELECT_MODE) {
 			setSelectionBounds(e);
-			selectionLayer.maskedCopyFrom(editor.getCurrentLayer(), selectionLayer.getBounds());
+			selectionLayer.maskedCopyFrom(editor.getCurrentLayer(), selectionLayer.getPixelBounds());
 			Iterator<MapObject> objects = selectionLayer.getObjects();
 			if (!objects.hasNext()) {
 				editor.getMap().removeLayerSpecial(selectionLayer);
 				return;
 			}
-			Rectangle origBounds = selectionLayer.getBounds();
+			Rectangle origBounds = selectionLayer.getPixelBounds();
 			int left = origBounds.x + origBounds.width;
 			int right = origBounds.x;
 			int top = origBounds.y + origBounds.height;
@@ -139,7 +139,8 @@ public class ObjectSelectionDragger implements IDragger {
 				if (rect.y + rect.height > bottom)
 					bottom = rect.y + rect.height;
 			}
-			selectionLayer.setBounds(new Rectangle(left,top,right - left, bottom - top));
+			selectionLayer.setPixelBounds(new Rectangle(left,top,right - left, bottom - top));
+			editor.fireObjectSelectionChanged();
 		} else if (currentMode == MOVE_MODE) {
 			Point translation = new Point(e.x - initialDragLocation.x, e.y - initialDragLocation.y);
 			if (editor.isSnapToGrid()) {

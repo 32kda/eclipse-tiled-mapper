@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Rectangle;
 public class ObjectGroup extends MapLayer
 {
     private LinkedList<MapObject> objects = new LinkedList<MapObject>();
+    protected Rectangle pixelBounds = null;
 
     /**
      * Default constructor.
@@ -228,4 +229,48 @@ public class ObjectGroup extends MapLayer
 
         return null;
     }
+
+    /**
+     * Returns {@link ObjectGroup} bounds in pixels (Pixel bounds are needed by some methods, e.g. selection API)
+     * @return {@link ObjectGroup} bounds in pixels
+     */
+	public Rectangle getPixelBounds() {
+		if (pixelBounds != null)
+			return pixelBounds;
+		else if (getMap() != null){
+			int tileWidth = getMap().getTileWidth();
+			int tileHeight = getMap().getTileHeight();
+			return new Rectangle(bounds.x * tileWidth, bounds.y * tileHeight, bounds.width * tileWidth, bounds.height * tileHeight);
+		}
+		return null;
+	}
+
+	/**
+	 * Sets {@link ObjectGroup} bounds in pixels
+	 * @param pixelBounds {@link ObjectGroup} bounds in pixels. 
+	 */
+	public void setPixelBounds(Rectangle pixelBounds) {
+		this.pixelBounds = pixelBounds;
+	}
+
+	/**
+	 * Sets {@link ObjectGroup} bounds in pixels
+	 * @param x {@link ObjectGroup} bounds in pixels.
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
+	public void setPixelBounds(int x, int y, int width, int height) {
+		this.pixelBounds = new Rectangle(x,y,width,height);;
+	}
+	
+	/**
+	 * Translates object group in pixels
+	 * @param dx x translation, pixels
+	 * @param dy y translation, pixels
+	 */
+	public void translatePixel(int dx, int dy) {
+		this.pixelBounds.x += dx;
+		this.pixelBounds.y += dy;
+	}
 }

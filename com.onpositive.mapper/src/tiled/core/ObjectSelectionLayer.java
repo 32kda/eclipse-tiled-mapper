@@ -15,11 +15,6 @@ public class ObjectSelectionLayer extends ObjectGroup {
 	protected Map<MapObject,Point> initialObjLocations = new HashMap<MapObject, Point>();
 
 	@Override
-	public void setBounds(Rectangle bounds) {
-		super.setBounds(bounds);
-	}
-	
-	@Override
 	public void maskedCopyFrom(MapLayer other, Rectangle mask) {
     	if (!(other instanceof ObjectGroup)) 
     		return;
@@ -65,4 +60,5 @@ public class ObjectSelectionLayer extends ObjectGroup {
 		return moveEdit;
 		
 	}
+
 }

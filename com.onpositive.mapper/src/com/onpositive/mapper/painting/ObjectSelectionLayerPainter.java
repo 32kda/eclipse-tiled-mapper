@@ -13,7 +13,7 @@ public class ObjectSelectionLayerPainter implements ISpecialLayerPainter {
 	@Override
 	public void paintSpecialLayer(GC gc, MapLayer layer) {
 		if (layer instanceof ObjectGroup) {
-			Rectangle bounds = layer.getBounds();
+			Rectangle bounds = ((ObjectGroup)layer).getPixelBounds();
 			gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_CYAN));
 			gc.setLineWidth(3);
 			gc.setLineStyle(SWT.LINE_DASH);

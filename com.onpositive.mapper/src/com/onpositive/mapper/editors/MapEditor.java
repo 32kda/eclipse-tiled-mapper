@@ -72,6 +72,7 @@ import tiled.core.MapChangedEvent;
 import tiled.core.MapLayer;
 import tiled.core.MapObject;
 import tiled.core.ObjectGroup;
+import tiled.core.ObjectSelectionLayer;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 import tiled.core.TileSet;
@@ -221,6 +222,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public static final String POINTER_STATE_PROP = "POINTER_STATE_PROP";
 	
 	public static final String MARQEE_SELECTION_PROP = "MARQEE_SELECTION_PROP";
+	public static final String OBJECT_SELECTION_PROP = "OBJECT_SELECTION_PROP";
 	public static final String CLIPBOARD_CONTENT_PROP = "CLIPBOARD_CONTENT_PROP";
 	
 	public static final int PS_POINT = 0;
@@ -510,6 +512,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		// Make sure a possible current highlight gets erased from screen
 		if (mapView != null && prefs.getBoolean("cursorhighlight", true)) {
 			Rectangle redraw = cursorHighlight.getBounds();
+			redraw.x *= currentMap.getTileWidth();
+			redraw.width *= currentMap.getTileWidth();
+			redraw.y *= currentMap.getTileHeight();
+			redraw.height *= currentMap.getTileHeight();
 			mapView.repaintRegion(redraw);
 		}
 
@@ -1321,19 +1327,27 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	}
 
 	public void copySelection() {
-		if (currentMap != null && marqueeSelection != null) {
-            if (getCurrentLayer() instanceof TileLayer) {
-                clipboardLayer = new TileLayer(
-                        marqueeSelection.getSelectedAreaBounds());
-            } else if (getCurrentLayer() instanceof ObjectGroup) {
-                clipboardLayer = new ObjectGroup(
-                        marqueeSelection.getSelectedAreaBounds());
-            }
-            clipboardLayer.maskedCopyFrom(
-                    getCurrentLayer(),
-                    marqueeSelection.getSelectedArea());
-            firePartPropertyChanged(CLIPBOARD_CONTENT_PROP,"","");
-        }
+		if (currentMap != null) {
+			if (marqueeSelection != null && getCurrentLayer() instanceof TileLayer) {
+	            if (getCurrentLayer() instanceof TileLayer) {
+	                clipboardLayer = new TileLayer(
+	                        marqueeSelection.getSelectedAreaBounds());
+	            } 
+//	            else if (getCurrentLayer() instanceof ObjectGroup) {
+//	                clipboardLayer = new ObjectGroup(
+//	                        marqueeSelection.getSelectedAreaBounds());
+//	            }
+	            clipboardLayer.maskedCopyFrom(
+	                    getCurrentLayer(),
+	                    marqueeSelection.getSelectedArea());
+	            firePartPropertyChanged(CLIPBOARD_CONTENT_PROP,"","");
+	        } else if (getCurrentLayer() instanceof ObjectGroup) {
+	        	ObjectSelectionLayer selLayer = getObjectSelectionLayer();
+	        	if (selLayer != null)
+	        		clipboardLayer = selLayer;
+	        	firePartPropertyChanged(CLIPBOARD_CONTENT_PROP,"","");
+	        }
+		}
 		
 	}
 	
@@ -1358,6 +1372,36 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 		if (clipboardLayer instanceof TileLayer) {
 			setBrush(new CustomBrush((TileLayer)clipboardLayer));
 			setCurrentPointerState(PS_PAINT);
+		} else if (clipboardLayer instanceof ObjectSelectionLayer && getCurrentLayer() instanceof ObjectGroup) {
+			Display display = Display.getDefault();
+			Point cursorLocation = null;
+			if (display.getCursorControl() == mapView) {
+				cursorLocation = display.getCursorLocation();
+				cursorLocation = display.map(null, mapView, cursorLocation);
+			}
+			Rectangle selectionBounds = ((ObjectSelectionLayer) clipboardLayer).getPixelBounds();
+			if (cursorLocation == null) {
+				cursorLocation = new Point(selectionBounds.x + selectionBounds.width, selectionBounds.y);
+				int mapPixelWidth = currentMap.getWidth() * currentMap.getTileWidth();
+				if (cursorLocation.x + selectionBounds.width > mapPixelWidth)
+					cursorLocation.x = mapPixelWidth - selectionBounds.width;
+			}
+			Iterator<MapObject> objects = ((ObjectSelectionLayer) clipboardLayer).getObjects();
+			try {
+				for (;objects.hasNext();) {
+					MapObject next = objects.next();
+					MapObject clone = next.clone();
+					Rectangle initialBounds = clone.getBounds();
+					clone.setBounds(initialBounds.x - selectionBounds.x + cursorLocation.x,
+									initialBounds.y - selectionBounds.y + cursorLocation.y,
+									initialBounds.width,
+									initialBounds.height);
+					((ObjectGroup) getCurrentLayer()).addObject(clone);
+				}
+			} catch (CloneNotSupportedException e) {
+				// Shouldn't happen
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -1367,9 +1411,24 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	}
 
 	public boolean hasSelection() {
-		return marqueeSelection != null;
+		return marqueeSelection != null || hasObjectSelection();
 	}
 	
+	protected boolean hasObjectSelection() {
+		return getCurrentLayer() instanceof ObjectGroup && getObjectSelectionLayer() != null;
+	}
+	
+	protected ObjectSelectionLayer getObjectSelectionLayer() {
+		Iterator<MapLayer> layers = currentMap.getLayersSpecial();
+		for (; layers.hasNext();) {
+			MapLayer next = layers.next();
+			if (next instanceof ObjectSelectionLayer) {
+				return (ObjectSelectionLayer) next;
+			}
+		}
+		return null;
+	}
+
 	public boolean hasClipboardData() {
 		return clipboardLayer != null;
 	}
@@ -1469,6 +1528,10 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	public int getSnappedScalarY(int scalar) {
 		return mapView.getSnappedScalarY(scalar);
+	}
+
+	public void fireObjectSelectionChanged() {
+		firePartPropertyChanged(OBJECT_SELECTION_PROP,"","");
 	}
 	
 }

@@ -53,7 +53,7 @@ public class MoveObjectsEdit extends AbstractOperation {
 			mapObject.translate(moveDist.x, moveDist.y);
 		}
 		if (objectSelectionLayer != null)
-			objectSelectionLayer.translate(moveDist.x,moveDist.y);
+			objectSelectionLayer.translatePixel(moveDist.x,moveDist.y);
 		return Status.OK_STATUS;
 	}
 
@@ -64,7 +64,7 @@ public class MoveObjectsEdit extends AbstractOperation {
 			mapObject.translate(-moveDist.x, -moveDist.y);
 		}
 		if (objectSelectionLayer != null)
-			objectSelectionLayer.translate(-moveDist.x,-moveDist.y);
+			objectSelectionLayer.translatePixel(-moveDist.x,-moveDist.y);
         return Status.OK_STATUS;
 	}
 

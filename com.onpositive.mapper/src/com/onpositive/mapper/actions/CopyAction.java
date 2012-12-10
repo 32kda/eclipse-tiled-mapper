@@ -18,7 +18,8 @@ public class CopyAction extends AbstractMapEditorAction implements IPropertyChan
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(MapEditor.MARQEE_SELECTION_PROP))
+		String property = event.getProperty();
+		if (MapEditor.MARQEE_SELECTION_PROP.equals(property) || MapEditor.OBJECT_SELECTION_PROP.equals(property))
 			setEnabled(mapEditor.hasSelection());
 	}
 

@@ -13,9 +13,6 @@
 package tiled.core;
 
 import java.util.Properties;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -23,10 +20,10 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import com.onpositive.mapper.MapperPlugin;
-
 import tiled.util.Converter;
 import tiled.util.Util;
+
+import com.onpositive.mapper.MapperPlugin;
 
 /**
  * An object occupying an {@link ObjectGroup}.
@@ -214,10 +211,11 @@ public class MapObject implements Cloneable
 
 	public void setImageSource(String basePath, String source) {
         imageSource = source;
-
         loadImage(Util.getAbsoluteFromRelative(basePath,source));
-
         scaledImage = null;
-		
+	}
+
+	public void setBounds(int x, int y, int width, int height) {
+		this.bounds = new Rectangle(x,y,width,height);
 	}
 }
