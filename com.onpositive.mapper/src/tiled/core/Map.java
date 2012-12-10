@@ -299,6 +299,7 @@ public class Map extends MultilayerPlane
 
     public void removeLayerSpecial(MapLayer layer) {
         if (specialLayers.remove(layer)) {
+        	layer.setMap(null);
             fireMapChanged(MapChangedEvent.LAYER_CHANGE);
         }
     }

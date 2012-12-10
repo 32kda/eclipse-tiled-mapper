@@ -9,12 +9,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.graphics.Point;
 
 import tiled.core.MapObject;
+import tiled.core.ObjectSelectionLayer;
 import tiled.mapeditor.resources.Resources;
 
 public class MoveObjectsEdit extends AbstractOperation {
 	
     private final MapObject[] mapObjects;
     private final Point moveDist;
+	private ObjectSelectionLayer objectSelectionLayer;
 
     public MoveObjectsEdit(MapObject[] mapObjects, Point moveDist) {
     	super(Resources.getString("action.object.move.multiple.name"));
@@ -40,7 +42,7 @@ public class MoveObjectsEdit extends AbstractOperation {
 	@Override
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		// TODO Auto-generated method stub
+		// Do nothing
 		return null;
 	}
 
@@ -50,6 +52,8 @@ public class MoveObjectsEdit extends AbstractOperation {
 		for (MapObject mapObject : mapObjects) {
 			mapObject.translate(moveDist.x, moveDist.y);
 		}
+		if (objectSelectionLayer != null)
+			objectSelectionLayer.translate(moveDist.x,moveDist.y);
 		return Status.OK_STATUS;
 	}
 
@@ -59,7 +63,13 @@ public class MoveObjectsEdit extends AbstractOperation {
 		for (MapObject mapObject : mapObjects) {
 			mapObject.translate(-moveDist.x, -moveDist.y);
 		}
+		if (objectSelectionLayer != null)
+			objectSelectionLayer.translate(-moveDist.x,-moveDist.y);
         return Status.OK_STATUS;
+	}
+
+	public void setSelectionLayer(ObjectSelectionLayer objectSelectionLayer) {
+		this.objectSelectionLayer = objectSelectionLayer;
 	}
 
 }

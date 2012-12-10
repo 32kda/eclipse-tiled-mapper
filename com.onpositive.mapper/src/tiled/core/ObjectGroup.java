@@ -161,6 +161,13 @@ public class ObjectGroup extends MapLayer
         objects.remove(o);
         o.setObjectGroup(null);
     }
+    
+    public void removeAllObjects() {
+    	for (MapObject object : objects) {
+			object.setObjectGroup(this);
+		}
+    	objects.clear();
+    }
 
     public Iterator<MapObject> getObjects() {
         return objects.iterator();

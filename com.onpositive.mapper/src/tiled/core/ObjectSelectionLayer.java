@@ -34,6 +34,15 @@ public class ObjectSelectionLayer extends ObjectGroup {
 		}
 	}
 	
+	public void reinitMove() {
+		initialObjLocations.clear();
+		for (Iterator<MapObject> iterator = getObjects(); iterator.hasNext();) {
+			MapObject object = iterator.next();
+			Rectangle curBounds = object.getBounds();
+			initialObjLocations.put(object, new Point(curBounds.x,curBounds.y));			
+		}
+	}
+	
 	public void moveObjects(Point translation) {
 		for(Iterator<MapObject> iterator = getObjects();iterator.hasNext();) {
 			MapObject mapObject = iterator.next();
@@ -51,7 +60,9 @@ public class ObjectSelectionLayer extends ObjectGroup {
 			mapObject.setLocation(initialPoint.x + translation.x, initialPoint.y + translation.y);
 			movedObjects[i++] = mapObject;
 		}
-		return new MoveObjectsEdit(movedObjects,translation);
+		MoveObjectsEdit moveEdit = new MoveObjectsEdit(movedObjects,translation);
+		moveEdit.setSelectionLayer(this);
+		return moveEdit;
 		
 	}
 }

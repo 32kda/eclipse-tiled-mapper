@@ -52,6 +52,7 @@ public class ObjectSelectionDragger implements IDragger {
 			currentMode = MOVE_MODE;
 			initialLayerLocation.x = selectionLayer.getBounds().x;
 			initialLayerLocation.y = selectionLayer.getBounds().y;
+			selectionLayer.reinitMove();
 		} if (currentMode == SELECT_MODE) {
 			if (selectionLayer != null) {
 				editor.getMap().removeLayerSpecial(selectionLayer);
