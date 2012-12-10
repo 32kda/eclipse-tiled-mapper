@@ -296,6 +296,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	private String basePath = "";
 
 	private IMemento initMemento;
+
+	private IOperationHistoryListener editorUndoListener;
 	
     @Override
 	public void doSave(IProgressMonitor monitor) {
@@ -385,7 +387,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 			registerGlobalActionHandlers(actionBars);
 			
-			operationHistory.addOperationHistoryListener(new IOperationHistoryListener() {
+			editorUndoListener = new IOperationHistoryListener() {
 				
 				@Override
 				public void historyNotification(OperationHistoryEvent event) {
@@ -393,7 +395,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 						event.getEventType() == OperationHistoryEvent.REDONE)
 						mapChanged(null);
 				}
-			});
+			};
+			operationHistory.addOperationHistoryListener(editorUndoListener);
 			site.getPage().addPartListener(mapEditorListener);
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -1298,6 +1301,9 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	@Override
 	public void dispose() {
 		super.dispose();
+		if (editorUndoListener != null) {
+			operationHistory.removeOperationHistoryListener(editorUndoListener);
+		}
 		undoAction.dispose();
 		redoAction.dispose();
 	}
