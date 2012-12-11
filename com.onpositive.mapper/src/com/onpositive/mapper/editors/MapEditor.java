@@ -14,6 +14,7 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IOperationHistoryListener;
@@ -84,7 +85,7 @@ import tiled.mapeditor.brush.ITileBrush;
 import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.resources.Resources;
 import tiled.mapeditor.selection.SelectionLayer;
-import tiled.mapeditor.undo.AddObjectEdit;
+import tiled.mapeditor.undo.AddObjectsEdit;
 import tiled.mapeditor.undo.MapLayerEdit;
 import tiled.mapeditor.undo.MoveLayerEdit;
 import tiled.mapeditor.undo.MoveObjectsEdit;
@@ -93,6 +94,7 @@ import tiled.util.Converter;
 import tiled.util.TiledConfiguration;
 import tiled.view.MapView;
 
+import com.onpositive.mapper.MapperPlugin;
 import com.onpositive.mapper.actions.CopyAction;
 import com.onpositive.mapper.actions.PasteAction;
 import com.onpositive.mapper.dialogs.ObjectPropertyDialog;
@@ -477,7 +479,8 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				try {
 					PlatformUI.getWorkbench().showPerspective(MapperPerspective.ID,workbenchWindow);
 				} catch (WorkbenchException e) {
-					// TODO Auto-generated catch block
+					// Shouldn't happen
+					MapperPlugin.log(e);
 					e.printStackTrace();
 				}
 			}
@@ -723,7 +726,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				 * Point pos = mapView.screenToPixelCoords( event.x, event.y);
 				 */
 				ObjectGroup group = (ObjectGroup) layer;
-				 addEdit(new AddObjectEdit(group, object));
+				 addEdit(new AddObjectsEdit(group, object));
 				group.addObject(object);
 				mapView.redraw();
 			}
@@ -1274,7 +1277,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	@Override
 	public void tilesetsSwapped(MapChangedEvent e, int index0,
 			int index1) {
-		// TODO Auto-generated method stub
+		// TODO Not supported yet
 	}
 
 	@Override
@@ -1284,7 +1287,7 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 
 	@Override
 	public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
-		// TODO Auto-generated method stub
+		// TODO Not supported yet
 	}
 
 	@Override
@@ -1379,6 +1382,9 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 				cursorLocation = display.getCursorLocation();
 				cursorLocation = display.map(null, mapView, cursorLocation);
 			}
+			if (isSnapToGrid()) {
+				cursorLocation = getSnappedVector(cursorLocation);
+			}
 			Rectangle selectionBounds = ((ObjectSelectionLayer) clipboardLayer).getPixelBounds();
 			if (cursorLocation == null) {
 				cursorLocation = new Point(selectionBounds.x + selectionBounds.width, selectionBounds.y);
@@ -1387,21 +1393,34 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 					cursorLocation.x = mapPixelWidth - selectionBounds.width;
 			}
 			Iterator<MapObject> objects = ((ObjectSelectionLayer) clipboardLayer).getObjects();
-			try {
-				for (;objects.hasNext();) {
-					MapObject next = objects.next();
-					MapObject clone = next.clone();
-					Rectangle initialBounds = clone.getBounds();
-					clone.setBounds(initialBounds.x - selectionBounds.x + cursorLocation.x,
-									initialBounds.y - selectionBounds.y + cursorLocation.y,
-									initialBounds.width,
-									initialBounds.height);
-					((ObjectGroup) getCurrentLayer()).addObject(clone);
-				}
-			} catch (CloneNotSupportedException e) {
-				// Shouldn't happen
-				e.printStackTrace();
+			addObjects(cursorLocation, selectionBounds, objects);
+		}
+	}
+
+	protected void addObjects(Point cursorLocation, Rectangle selectionBounds,
+			Iterator<MapObject> objects) {
+		try {
+			List <MapObject> resultObjects = new ArrayList<MapObject>();
+			for (;objects.hasNext();) {
+				MapObject next = objects.next();
+				MapObject clone = next.clone();
+				Rectangle initialBounds = clone.getBounds();
+				clone.setBounds(initialBounds.x - selectionBounds.x + cursorLocation.x,
+								initialBounds.y - selectionBounds.y + cursorLocation.y,
+								initialBounds.width,
+								initialBounds.height);
+				resultObjects.add(clone);
 			}
+			AddObjectsEdit edit = new AddObjectsEdit((ObjectGroup) getCurrentLayer(),resultObjects.toArray(new MapObject[0]));
+			edit.execute(null,null);
+			addEdit(edit);
+			mapView.redraw();
+		} catch (CloneNotSupportedException e) {
+			// Shouldn't happen
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// Shouldn't happen
+			e.printStackTrace();
 		}
 	}
 	

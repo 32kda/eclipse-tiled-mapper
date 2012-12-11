@@ -28,21 +28,23 @@ import tiled.mapeditor.resources.Resources;
  *
  * @version $Id$
  */
-public class AddObjectEdit extends AbstractOperation
+public class AddObjectsEdit extends AbstractOperation
 {
     private final ObjectGroup objectGroup;
-    private final MapObject mapObject;
+    private final MapObject[] mapObjects;
 
-    public AddObjectEdit(ObjectGroup objectGroup, MapObject mapObject) {
-    	super(Resources.getString("action.object.add.name"));
+    public AddObjectsEdit(ObjectGroup objectGroup, MapObject[] mapObjects) {
+    	super(Resources.getString("action.object.add.multiple.name"));
         this.objectGroup = objectGroup;
-        this.mapObject = mapObject;
-    }
-
-    public String getPresentationName() {
-        return Resources.getString("action.object.add.name");
+        this.mapObjects = mapObjects;
     }
     
+    public AddObjectsEdit(ObjectGroup objectGroup, MapObject mapObject) {
+    	super(Resources.getString("action.object.add.name"));
+        this.objectGroup = objectGroup;
+        this.mapObjects = new MapObject[]{mapObject};
+    }
+
     @Override
     public boolean canExecute() {
     	return false;
@@ -51,21 +53,27 @@ public class AddObjectEdit extends AbstractOperation
 	@Override
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		// TODO Auto-generated method stub
-		return null;
+		for (MapObject object : mapObjects) {
+			objectGroup.addObject(object);
+		}
+		return Status.OK_STATUS;
 	}
 
 	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		objectGroup.addObject(mapObject);
+		for (MapObject object : mapObjects) {
+			objectGroup.addObject(object);
+		}
 		return Status.OK_STATUS;
 	}
 
 	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-        objectGroup.removeObject(mapObject);
+		for (MapObject object : mapObjects) {
+			objectGroup.removeObject(object);
+		}
 		return Status.OK_STATUS;
 	}
 }
