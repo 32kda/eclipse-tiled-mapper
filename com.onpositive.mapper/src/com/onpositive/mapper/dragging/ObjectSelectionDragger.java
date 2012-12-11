@@ -119,8 +119,16 @@ public class ObjectSelectionDragger implements IDragger {
 			selectionLayer.maskedCopyFrom(editor.getCurrentLayer(), selectionLayer.getPixelBounds());
 			Iterator<MapObject> objects = selectionLayer.getObjects();
 			if (!objects.hasNext()) {
-				editor.getMap().removeLayerSpecial(selectionLayer);
-				return;
+				MapObject object = ((ObjectGroup)editor.getCurrentLayer()).getObjectAt(e.x,e.y);
+				if (object == null) {
+					editor.getMap().removeLayerSpecial(selectionLayer);
+					return;
+				} else {
+					selectionLayer.addObject(object);
+					selectionLayer.setPixelBounds(object.getBounds());
+					objects = selectionLayer.getObjects(); //To avoid concurrent modification
+				}
+				
 			}
 			Rectangle origBounds = selectionLayer.getPixelBounds();
 			int left = origBounds.x + origBounds.width;
