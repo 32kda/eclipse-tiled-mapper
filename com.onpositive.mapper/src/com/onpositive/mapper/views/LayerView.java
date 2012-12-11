@@ -3,6 +3,9 @@ package com.onpositive.mapper.views;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.operations.RedoActionHandler;
+import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.*;
 import org.eclipse.swt.SWT;
@@ -96,6 +99,23 @@ public class LayerView extends PageBookView {
 		initPage(layerPage);
 		layerPage.createControl(getPageBook());
 		return new PageRec(part,layerPage);
+	}
+	
+	@Override
+	protected void showPageRec(PageRec pageRec) {
+		super.showPageRec(pageRec);
+		if (pageRec.page instanceof LayerViewPage) {
+			MapEditor mapEditor = ((LayerViewPage) pageRec.page).getMapEditor();
+			UndoActionHandler undoAction = new UndoActionHandler(getSite(), mapEditor.getUndoContext());
+			undoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_UNDO);
+			RedoActionHandler redoAction = new RedoActionHandler(getSite(), mapEditor.getUndoContext());
+			redoAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_REDO);
+			IActionBars actionBars = ((IViewSite) getSite()).getActionBars();
+		    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
+		    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
+		    // Update action bars.
+		    getViewSite().getActionBars().updateActionBars();
+		}
 	}
 
 	@Override

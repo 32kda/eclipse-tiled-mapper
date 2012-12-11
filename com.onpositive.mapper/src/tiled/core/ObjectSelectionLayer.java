@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Rectangle;
 
 import tiled.mapeditor.undo.MoveObjectsEdit;
 
-public class ObjectSelectionLayer extends ObjectGroup {
+public class ObjectSelectionLayer extends ObjectGroup implements ISelectionLayer{
 	
 	protected Map<MapObject,Point> initialObjLocations = new HashMap<MapObject, Point>();
 

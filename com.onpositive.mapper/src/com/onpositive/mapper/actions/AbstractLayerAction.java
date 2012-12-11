@@ -80,9 +80,9 @@ public abstract class AbstractLayerAction extends Action implements
     	 // Capture the layers before the operation is executed.
         Map map = editor.getMap();
         Vector<MapLayer> layersBefore = new Vector<MapLayer>(map.getLayerVector());
-
+        int oldIdx = editor.getCurrentLayerIndex();
         doPerformAction();
-
+        int newIdx = editor.getCurrentLayerIndex();
         // Capture the layers after the operation is executed and create the
         // layer state edit instance.
         Vector<MapLayer> layersAfter = new Vector<MapLayer>(map.getLayerVector());
@@ -90,8 +90,8 @@ public abstract class AbstractLayerAction extends Action implements
         if (action != null )
         	text = action.getText();
         MapLayerStateEdit mapLayerStateEdit =  
-                new MapLayerStateEdit(map, layersBefore, layersAfter,
-                                      text);
+                new MapLayerStateEdit(editor, layersBefore, layersAfter,
+                                      text,oldIdx,newIdx);
         editor.addEdit(mapLayerStateEdit);
     }
 

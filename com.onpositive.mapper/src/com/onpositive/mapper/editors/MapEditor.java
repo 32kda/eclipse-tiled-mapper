@@ -1552,5 +1552,9 @@ public class MapEditor extends EditorPart implements MapChangeListener, ILocalUn
 	public void fireObjectSelectionChanged() {
 		firePartPropertyChanged(OBJECT_SELECTION_PROP,"","");
 	}
+
+	public IUndoContext getUndoContext() {
+		return undoContext;
+	}
 	
 }

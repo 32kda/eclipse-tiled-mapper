@@ -417,4 +417,8 @@ public class LayerViewPage extends Page {
 		super.dispose();
 		parent.removeControlListener(controlListener);
 	}
+
+	public MapEditor getMapEditor() {
+		return mapEditor;
+	}
 }

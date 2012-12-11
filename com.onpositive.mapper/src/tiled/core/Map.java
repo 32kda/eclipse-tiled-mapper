@@ -161,7 +161,8 @@ public class Map extends MultilayerPlane
     public void addLayerSpecial(MapLayer layer) {
         layer.setMap(this);
         specialLayers.add(layer);
-        fireMapChanged(MapChangedEvent.LAYER_CHANGE);
+        if (!(layer instanceof ISelectionLayer))
+        	fireMapChanged(MapChangedEvent.LAYER_CHANGE);
     }
 
     public MapLayer addLayer(MapLayer layer) {
@@ -300,7 +301,9 @@ public class Map extends MultilayerPlane
     public void removeLayerSpecial(MapLayer layer) {
         if (specialLayers.remove(layer)) {
         	layer.setMap(null);
-            fireMapChanged(MapChangedEvent.LAYER_CHANGE);
+        	if (!(layer instanceof ISelectionLayer)) {
+        		fireMapChanged(MapChangedEvent.LAYER_CHANGE);
+        	}
         }
     }
 

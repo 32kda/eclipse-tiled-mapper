@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import com.onpositive.mapper.editors.MapEditor;
+
 import tiled.core.Map;
 import tiled.core.MapLayer;
 
@@ -30,21 +32,38 @@ import tiled.core.MapLayer;
  */
 public class MapLayerStateEdit extends AbstractOperation
 {
-    private final Map map;
+    private final MapEditor mapEditor;
     private final Vector<MapLayer> layersBefore;
     private final Vector<MapLayer> layersAfter;
     private final String name;
+	private int oldIdx = -1;
+	private int newIdx = -1;
 
-    public MapLayerStateEdit(Map m,
+    public MapLayerStateEdit(MapEditor editor,
                              Vector<MapLayer> before,
                              Vector<MapLayer> after,
                              String name) {
     	super(name);
-        map = m;
+        mapEditor = editor;
         layersBefore = before;
         layersAfter = after;
         this.name = name;
     }
+    
+    public MapLayerStateEdit(MapEditor editor,
+            Vector<MapLayer> before,
+            Vector<MapLayer> after,
+            String name, 
+            int oldIdx,
+            int newIdx) {
+		super(name);
+		mapEditor = editor;
+		layersBefore = before;
+		layersAfter = after;
+		this.name = name;
+		this.oldIdx = oldIdx;
+		this.newIdx = newIdx;
+	}
 
     public String getPresentationName() {
         return name;
@@ -65,14 +84,18 @@ public class MapLayerStateEdit extends AbstractOperation
 	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		map.setLayerVector(layersAfter);
+		mapEditor.getMap().setLayerVector(layersAfter);
+		if (newIdx > -1)
+			mapEditor.setCurrentLayer(newIdx);
 		return Status.OK_STATUS;
 	}
 
 	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 			throws ExecutionException {
-		map.setLayerVector(layersBefore);
+		mapEditor.getMap().setLayerVector(layersBefore);
+		if (oldIdx > -1)
+			mapEditor.setCurrentLayer(oldIdx);
 		return Status.OK_STATUS;
 	}
 }
