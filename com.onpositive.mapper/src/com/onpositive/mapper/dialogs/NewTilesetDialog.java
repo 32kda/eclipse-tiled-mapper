@@ -135,6 +135,13 @@ public class NewTilesetDialog extends Dialog {
 		        }
 			}
 		});
+		imageText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent event) {
+				validate();
+			}
+		});
 		Group tilesGroup = new Group(composite,SWT.NONE);
 		tilesGroup.setText("Tiles");
 		tilesGroup.setLayout(new GridLayout(2,false));
