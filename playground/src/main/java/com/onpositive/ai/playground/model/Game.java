@@ -54,14 +54,13 @@ public class Game {
 		List<Unit> res = new ArrayList<>();
 		int attackRange = unit.getType().attackRange;
 		UnitSide side = unit.getSide();
-		Position position = unit.getPosition();
 		if (attackRange == 1) { //melee
-			checkMeleeTarget(position.x - 1, position.y, side, res);
-			checkMeleeTarget(position.x, position.y - 1, side, res);
-			checkMeleeTarget(position.x + 1, position.y, side, res);
-			checkMeleeTarget(position.x, position.y + 1, side, res);
+			checkMeleeTarget(attackPosition.x - 1, attackPosition.y, side, res);
+			checkMeleeTarget(attackPosition.x, attackPosition.y - 1, side, res);
+			checkMeleeTarget(attackPosition.x + 1, attackPosition.y, side, res);
+			checkMeleeTarget(attackPosition.x, attackPosition.y + 1, side, res);
 		} else { //ranged attack
-			findRangedTargets(position.x, position.y, side, attackRange, res);
+			findRangedTargets(attackPosition.x, attackPosition.y, side, attackRange, res);
 		}
 		return res;
 	}
@@ -105,7 +104,7 @@ public class Game {
 		unit.setField(cells);
 	}	
 	
-	public void setSideTurntController(UnitSide side, ITurnController controller) {
+	public void setSideTurnController(UnitSide side, ITurnController controller) {
 		sideTurnControllers.put(side, controller);
 	}
 	
@@ -123,7 +122,7 @@ public class Game {
 			sideTurnControllers.values().stream().forEach(contr -> contr.gameFinished(getWonSide()));
 		} else {
 			curUnit++;
-			if (curUnit > units.size()) {
+			if (curUnit >= units.size()) {
 				curUnit = 0;
 			}
 			nextTurn();

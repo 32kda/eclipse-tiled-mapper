@@ -7,6 +7,7 @@ public class Unit {
 	private Position position;
 	private Cell[][] field;
 	private UnitSide side;
+	private int reward;
 	
 	public Unit(UnitType type, UnitSide side, Position position, Cell[][] field) {
 		this (type, side, position);
@@ -77,6 +78,24 @@ public class Unit {
 
 	public void setSide(UnitSide side) {
 		this.side = side;
+	}
+
+	public int getReward() {
+		return reward;
+	}
+
+	public void setReward(int reward) {
+		this.reward = reward;
+	}
+	
+	public void addReward(int amount) {
+		this.reward += amount;
+	}
+
+	@Override
+	public String toString() {
+		return type + "[health=" + health + ", position=" + position + ", side=" + side + ", reward="
+				+ reward + "]";
 	}
 
 }

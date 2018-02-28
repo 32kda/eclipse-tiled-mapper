@@ -12,7 +12,7 @@ import com.onpositive.ai.playground.model.Unit;
 import com.onpositive.ai.playground.model.UnitAction;
 import com.onpositive.ai.playground.model.UnitSide;
 
-public class UITurnController implements ITurnController, ICellSelectionListener {
+public class UITurnController implements IUITurnController {
 	
 	private GameView gameView;
 	private Position movePosition;
@@ -20,7 +20,6 @@ public class UITurnController implements ITurnController, ICellSelectionListener
 
 	public UITurnController(GameView gameView) {
 		this.gameView = gameView;
-		gameView.addCellSelectionListener(this);
 	}
 
 	@Override
@@ -47,14 +46,22 @@ public class UITurnController implements ITurnController, ICellSelectionListener
 
 	@Override
 	public void cellSelected(Position position) {
-		this.movePosition = position;
+		if (curUnit != null) {
+			this.movePosition = position;
+		}
 	}
 
 	@Override
 	public void targetSelected(Unit unit) {
-		if (movePosition != null && gameView.getGame().getAttackableUnits(unit,movePosition).contains(unit)) {
-			UnitAction action = new UnitAction(curUnit, movePosition, unit);
-			gameView.finishTurn(action);
+		if (curUnit != null) {
+			if (movePosition != null && unit == null) { //Move without attack
+				gameView.finishTurn(new UnitAction(curUnit, movePosition, unit));
+			} else {
+				if (movePosition == null) {
+					movePosition = curUnit.getPosition(); //Attack without move
+				}
+				gameView.finishTurn(new UnitAction(curUnit, movePosition, unit));
+			}
 			movePosition = null;
 		}
 	}
