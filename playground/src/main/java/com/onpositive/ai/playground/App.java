@@ -39,8 +39,8 @@ public class App
 	        scrollPane.setBorder(null);
 	        scrollPane.setPreferredSize(new Dimension(800, 700));
 	        
-	        game.setSideTurntController(UnitSide.LEFT, new UITurnController(gameView));
-	        game.setSideTurntController(UnitSide.RIGHT, new UITurnController(gameView));
+	        gameView.setSideTurnController(UnitSide.LEFT, new UITurnController(gameView));
+	        gameView.setSideTurnController(UnitSide.RIGHT, new UITurnController(gameView));
 //	        scrollPane.add(new GameView(game));
 
 	        JFrame appFrame = new JFrame("Sample Game");

@@ -7,7 +7,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,9 +21,11 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
 import com.onpositive.ai.playground.model.Game;
+import com.onpositive.ai.playground.model.ITurnController;
 import com.onpositive.ai.playground.model.Position;
 import com.onpositive.ai.playground.model.Unit;
 import com.onpositive.ai.playground.model.UnitAction;
+import com.onpositive.ai.playground.model.UnitSide;
 
 import tiled.core.Map;
 import tiled.core.MapLayer;
@@ -35,9 +40,11 @@ public class GameView extends JPanel implements Scrollable
 	private Game game;
 	private List<UnitView> unitViews;
 	protected Position currentTile;
-	protected List<ICellSelectionListener> cellSelectionListeners = new ArrayList<>();
+	protected List<IUITurnController> cellSelectionListeners = new ArrayList<>();
 	private Set<Position> reachableCells;
 	private List<Unit> attackableUnits;
+	
+	private java.util.Map<UnitSide,IUITurnController> turnControllers = new HashMap<>();
 	private Unit curUnit;
 
     public GameView(Game game) {
@@ -71,11 +78,12 @@ public class GameView extends JPanel implements Scrollable
 			unitView.paint(g2d);
 		}
         
+        
+        int tileWidth = getTileWidth();
+        int tileHeight = getTileHeight();
         if (reachableCells != null) {
         	int mapWidth = game.getGameMap().getWidth();
         	int mapHeight = game.getGameMap().getHeight();
-        	int tileWidth = getTileWidth();
-        	int tileHeight = getTileHeight();
         	
         	g2d.setPaint(new Color(20, 200, 20));
         	g2d.drawRect(curUnit.getPosition().x * tileWidth, curUnit.getPosition().y * tileHeight, tileWidth, tileHeight);
@@ -88,6 +96,18 @@ public class GameView extends JPanel implements Scrollable
 					}
         		}
         	}
+        }
+        
+        if (attackableUnits != null) {
+        	g2d.setPaint(new Color(180, 0, 0, 100));
+        	for (Unit unit : attackableUnits) {
+        		g2d.fillRect(unit.getPosition().x * tileWidth, unit.getPosition().y * tileHeight, tileWidth, tileHeight);
+			}
+        }
+        
+        if (currentTile != null) {
+        	g2d.setPaint(new Color(200, 200, 20));
+        	g2d.drawRect(currentTile.x * tileWidth, currentTile.y * tileHeight, tileWidth, tileHeight);
         }
     }
 
@@ -139,23 +159,29 @@ public class GameView extends JPanel implements Scrollable
 		addMouseListener(new MouseAdapter() {
 			
 			@Override
-			public void mouseMoved(MouseEvent e) {
-				int tileX = e.getX() / getTileWidth();
-				int tileY = e.getY() / getTileHeight();
-				if (map.inBounds(tileX, tileY)) {
-					currentTile = new Position(tileX, tileY);
-				}
-				super.mouseMoved(e);
-			}
-			
-			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (curUnit == null || reachableCells == null) {
+					return;
+				}
 				int tileX = e.getX() / getTileWidth();
 				int tileY = e.getY() / getTileHeight();
 				if (map.inBounds(tileX, tileY)) {
+					Position currentPos = new Position(tileX, tileY);
 					if (e.getButton() == MouseEvent.BUTTON1) {
-						Position currentPos = new Position(tileX, tileY);
-						if (reachableCells != null && reachableCells.contains(currentPos)) {
+						if (reachableCells.contains(currentPos)) {
+							fireCellSelected(currentPos);
+						}
+					}
+					if (e.getButton() == MouseEvent.BUTTON3) {
+						boolean targetFound = false;
+						for (Unit unit : attackableUnits) {
+							if (unit.getPosition().equals(currentPos)) {
+								fireTargetSelected(unit);
+								targetFound = true;
+								break;
+							}
+						}
+						if (!targetFound && reachableCells.contains(currentPos)) {
 							fireCellSelected(currentPos);
 						}
 					}
@@ -163,11 +189,35 @@ public class GameView extends JPanel implements Scrollable
 			}
 			
 		});
+		addMouseMotionListener(new MouseMotionAdapter() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				int tileX = e.getX() / getTileWidth();
+				int tileY = e.getY() / getTileHeight();
+				if (map.inBounds(tileX, tileY)) {
+					currentTile = new Position(tileX, tileY);
+					refresh();
+				}
+			}
+			
+		});
+	}
+
+	protected void fireTargetSelected(Unit unit) {
+		IUITurnController controller = turnControllers.get(curUnit.getSide());
+		if (controller != null) {
+			controller.targetSelected(unit);
+		}
 	}
 
 	protected void fireCellSelected(Position currentPos) {
-		for (ICellSelectionListener listener: cellSelectionListeners) {
-			listener.cellSelected(currentPos);
+		IUITurnController controller = turnControllers.get(curUnit.getSide());
+		if (controller != null) {
+			controller.cellSelected(currentPos);
+			if (attackableUnits.isEmpty()) {
+				controller.targetSelected(null);
+			}
 		}
 	}
 
@@ -175,7 +225,7 @@ public class GameView extends JPanel implements Scrollable
 		return game;
 	}
 
-	public boolean addCellSelectionListener(ICellSelectionListener e) {
+	public boolean addCellSelectionListener(IUITurnController e) {
 		return cellSelectionListeners.add(e);
 	}
 
@@ -196,13 +246,21 @@ public class GameView extends JPanel implements Scrollable
 	}
 
 	public void finishTurn(UnitAction action) {
-		game.finishTurn(action);
 		reachableCells = null;
 		attackableUnits = null;
+		setCurUnit(null);
+		game.finishTurn(action);
 		refresh();
 	}
 
 	public void setCurUnit(Unit curUnit) {
 		this.curUnit = curUnit;
+	}
+
+	public void setSideTurnController(UnitSide side, ITurnController turnController) {
+		game.setSideTurnController(side, turnController);
+		if (turnController instanceof IUITurnController) {
+			turnControllers.put(side, (IUITurnController) turnController);
+		}
 	}
 }
