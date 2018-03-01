@@ -4,7 +4,6 @@ public class Cell {
 	
 	private boolean obstacle = false;
 	private Unit unit = null;
-	private UnitSide unitSide = null;
 	
 	public boolean isObstacle() {
 		return obstacle;
@@ -17,12 +16,6 @@ public class Cell {
 	}
 	public void setUnit(Unit unit) {
 		this.unit = unit;
-	}
-	public UnitSide getUnitSide() {
-		return unitSide;
-	}
-	public void setUnitSide(UnitSide unitSide) {
-		this.unitSide = unitSide;
 	}
 
 }

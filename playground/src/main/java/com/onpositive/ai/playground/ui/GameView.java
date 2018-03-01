@@ -1,14 +1,16 @@
 package com.onpositive.ai.playground.ui;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,13 +108,25 @@ public class GameView extends JPanel implements Scrollable
 			}
         }
         
-        if (curUnit != null && selectedMovePosition != null) {
-        	 for (UnitView unitView : unitViews) {
-        		 if (unitView.getUnit() == curUnit) {
-        			 g2d.drawImage(unitView.getImage(), selectedMovePosition.x * tileWidth, selectedMovePosition.y * tileHeight, new Color(0,150,0), null);
-        		 }
-        	 }
-        }
+		if (curUnit != null && selectedMovePosition != null) {
+			for (UnitView unitView : unitViews) {
+				if (unitView.getUnit() == curUnit) {
+					final Graphics2D tmp = (Graphics2D) g2d.create();
+					try {
+						Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
+								new float[] { 9 }, 0);
+						tmp.setStroke(dashed);
+						tmp.drawRect(selectedMovePosition.x * tileWidth, selectedMovePosition.y * tileHeight, tileWidth,
+								tileHeight);
+						tmp.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+						tmp.drawImage(unitView.getImage(), selectedMovePosition.x * tileWidth,
+								selectedMovePosition.y * tileHeight, null);
+					} finally {
+						tmp.dispose();
+					}
+				}
+			}
+		}
         
         if (currentTile != null) {
         	g2d.setPaint(new Color(200, 200, 20));
