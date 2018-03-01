@@ -46,6 +46,7 @@ public class GameView extends JPanel implements Scrollable
 	
 	private java.util.Map<UnitSide,IUITurnController> turnControllers = new HashMap<>();
 	private Unit curUnit;
+	private Position selectedMovePosition;
 
     public GameView(Game game) {
         this.game = game;
@@ -88,7 +89,7 @@ public class GameView extends JPanel implements Scrollable
         	g2d.setPaint(new Color(20, 200, 20));
         	g2d.drawRect(curUnit.getPosition().x * tileWidth, curUnit.getPosition().y * tileHeight, tileWidth, tileHeight);
         	
-        	g2d.setPaint(new Color(100, 100, 100, 100));
+        	g2d.setPaint(new Color(100, 100, 100, 70));
 			for (int x = 0; x < mapWidth; x++) {
 				for (int y = 0; y < mapHeight; y++) {
 					if (!reachableCells.contains(new Position(x,y))) {
@@ -103,6 +104,14 @@ public class GameView extends JPanel implements Scrollable
         	for (Unit unit : attackableUnits) {
         		g2d.fillRect(unit.getPosition().x * tileWidth, unit.getPosition().y * tileHeight, tileWidth, tileHeight);
 			}
+        }
+        
+        if (curUnit != null && selectedMovePosition != null) {
+        	 for (UnitView unitView : unitViews) {
+        		 if (unitView.getUnit() == curUnit) {
+        			 g2d.drawImage(unitView.getImage(), selectedMovePosition.x * tileWidth, selectedMovePosition.y * tileHeight, new Color(0,150,0), null);
+        		 }
+        	 }
         }
         
         if (currentTile != null) {
@@ -248,6 +257,7 @@ public class GameView extends JPanel implements Scrollable
 	public void finishTurn(UnitAction action) {
 		reachableCells = null;
 		attackableUnits = null;
+		selectedMovePosition = null;
 		setCurUnit(null);
 		game.finishTurn(action);
 		refresh();
@@ -262,5 +272,9 @@ public class GameView extends JPanel implements Scrollable
 		if (turnController instanceof IUITurnController) {
 			turnControllers.put(side, (IUITurnController) turnController);
 		}
+	}
+
+	public void setSelectedMovePosition(Position selectedMovePosition) {
+		this.selectedMovePosition = selectedMovePosition;
 	}
 }

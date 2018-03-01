@@ -1,5 +1,6 @@
 package com.onpositive.ai.playground.ui;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.Map;
@@ -37,6 +38,10 @@ public class UnitView {
 	public void setUnitImages(Map<Orientation, Image> unitImages) {
 		this.unitImages = unitImages;
 	}
+	
+	public Image getImage() {
+		return unit.getSide() == UnitSide.LEFT ? unitImages.get(Orientation.RIGHT) : unitImages.get(Orientation.LEFT);
+	}
 
 	public void paint(Graphics2D g2d) {
 		Image image = unitImages.get(Orientation.LEFT);
@@ -44,7 +49,13 @@ public class UnitView {
 			image = unitImages.get(Orientation.RIGHT);
 		}
 		Position position = unit.getPosition();
-		g2d.drawImage(image, position.x * tileWidth, (position.y + 1) * tileHeight - image.getHeight(null), null);
+		int imgX = position.x * tileWidth;
+		int imgY = (position.y + 1) * tileHeight - image.getHeight(null);
+		g2d.drawImage(image, imgX, imgY, null);
+		double ratio = unit.getHealth() * 1.0 / unit.getType().health;
+		int barHeight = (int) (tileHeight * ratio);
+		g2d.setColor(new Color((int)(255 * (1 - ratio)),(int) (255 * ratio),0));
+		g2d.drawLine((position.x + 1) * tileWidth - 2, imgY + tileHeight - barHeight,(position.x + 1) * tileWidth - 2, imgY + tileHeight);
 	}
 
 }

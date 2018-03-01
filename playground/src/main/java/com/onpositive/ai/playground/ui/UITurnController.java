@@ -1,12 +1,10 @@
 package com.onpositive.ai.playground.ui;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.onpositive.ai.playground.model.ITurnController;
+import javax.swing.JTextPane;
+
 import com.onpositive.ai.playground.model.Position;
 import com.onpositive.ai.playground.model.Unit;
 import com.onpositive.ai.playground.model.UnitAction;
@@ -17,19 +15,25 @@ public class UITurnController implements IUITurnController {
 	private GameView gameView;
 	private Position movePosition;
 	private Unit curUnit;
+	private JTextPane infoPane;
 
-	public UITurnController(GameView gameView) {
+	public UITurnController(GameView gameView, JTextPane infoPane) {
 		this.gameView = gameView;
+		this.infoPane = infoPane;
 	}
 
 	@Override
 	public void requestAction(Unit unit) {
 		this.curUnit = unit;
 		List<Position> reachableCells = gameView.getGame().getReachableCells(unit);
-		List<Unit> attackableUnits = reachableCells.stream().flatMap(position -> gameView.getGame().getAttackableUnits(unit,position).stream()).distinct().collect(Collectors.toList());
 		gameView.setCurUnit(unit);
 		gameView.setReachableCells(reachableCells);
-		gameView.setAttackableUnits(attackableUnits);
+		if (curUnit.getType().attackRange == 1) {
+			List<Unit> attackableUnits = reachableCells.stream().flatMap(position -> gameView.getGame().getAttackableUnits(unit,position).stream()).distinct().collect(Collectors.toList());
+			gameView.setAttackableUnits(attackableUnits);
+		} else {
+			gameView.setAttackableUnits(gameView.getGame().getAttackableUnits(unit,unit.getPosition()));
+		}
 		gameView.refresh();
 	}
 
@@ -48,6 +52,10 @@ public class UITurnController implements IUITurnController {
 	public void cellSelected(Position position) {
 		if (curUnit != null) {
 			this.movePosition = position;
+		}
+		gameView.setSelectedMovePosition(movePosition);
+		if (curUnit.getType().attackRange > 1) {
+			gameView.setAttackableUnits(gameView.getGame().getAttackableUnits(curUnit,movePosition));
 		}
 	}
 
