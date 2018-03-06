@@ -23,6 +23,8 @@ public class Game {
 	private int curUnit = 0;
 	private java.util.Map<UnitSide, ITurnController> sideTurnControllers = new HashMap<>();
 	
+	private IRewardCalculator rewardCalculator = new BasicRewardCalculator();
+	
 	
 	public Game(Map gameMap) {
 		this.gameMap = gameMap;
@@ -96,6 +98,8 @@ public class Game {
 			if (!targetUnit.isAlive()) {
 				units.remove(unit);
 			}
+			unit.addReward(rewardCalculator.getAttackerReward(unit,targetUnit, damage));
+			targetUnit.addReward(rewardCalculator.getTargetReward(unit,targetUnit, damage));
 		}
 	}
 	
@@ -204,6 +208,10 @@ public class Game {
 		return !cells[y][x].isObstacle() && cells[y][x].getUnit() == null;
 	}
 	
+	public boolean isObstacleCell(int x, int y) {
+		return cells[y][x].isObstacle();
+	}
+	
 	private boolean inDirectRange(int x1, int y1, int x2, int y2, int range) {
 		return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) <= range * range;
 	}
@@ -231,6 +239,14 @@ public class Game {
 			}
 		}
 		return vonSide;
+	}
+
+	public IRewardCalculator getRewardCalculator() {
+		return rewardCalculator;
+	}
+
+	public void setRewardCalculator(IRewardCalculator rewardCalculator) {
+		this.rewardCalculator = rewardCalculator;
 	}
 	
 }
