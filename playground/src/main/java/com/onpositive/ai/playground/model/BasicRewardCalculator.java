@@ -8,13 +8,19 @@ public class BasicRewardCalculator implements IRewardCalculator {
 	private static final int DEATH_REWARD = -7;
 
 	@Override
-	public int getAttackerReward(Unit attacker, Unit target, int damage) {
-		return target.isAlive() ? DAMAGE_DONE_REWARD : DAMAGE_DONE_REWARD + KILL_REWARD;
+	public int getAttackerReward(UnitAction action) {
+		if (action.attackTarget != null) {
+			return action.attackTarget.isAlive() ? DAMAGE_DONE_REWARD : DAMAGE_DONE_REWARD + KILL_REWARD;
+		}
+		return 0;
 	}
 
 	@Override
-	public int getTargetReward(Unit attacker, Unit target, int damage) {
-		return target.isAlive() ? DAMAGE_TAKEN_REWARD : DAMAGE_TAKEN_REWARD + DEATH_REWARD;
+	public int getTargetReward(UnitAction action) {
+		if (action.attackTarget != null) {
+			return action.attackTarget.isAlive() ? DAMAGE_TAKEN_REWARD : DAMAGE_TAKEN_REWARD + DEATH_REWARD;
+		}
+		return 0;
 	}
 
 }

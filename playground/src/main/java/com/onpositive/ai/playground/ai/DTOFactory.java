@@ -23,8 +23,18 @@ public class DTOFactory {
 	}
 	
 	public GameStateDTO createGameStateDTO(UnitAction action) {
-		List<Unit> units = game.getUnits();
-		UnitDTO[] unitDTOs = units.stream().map(unit -> new UnitDTO(unit, unit == action.unit)).toArray(UnitDTO[]::new);
+		UnitDTO[][] unitDTOs = new UnitDTO[game.getGameMap().getHeight()][];
+		for (int i = 0; i < unitDTOs.length; i++) {
+			unitDTOs[i] = new UnitDTO[game.getGameMap().getWidth()];
+			for (int j = 0; j < unitDTOs[i].length; j++) {
+				Unit unit = game.getUnit(j,i);
+				if (unit != null) {
+					unitDTOs[i][j] = new UnitDTO(unit, unit == action.unit, unit == action.attackTarget);
+				} else {
+					unitDTOs[i][j] = new UnitDTO();
+				}
+			}
+		}
 		UnitActionDTO actionDTO = new UnitActionDTO(action, game);
 		return new GameStateDTO(obstacles,unitDTOs,actionDTO);
 	}

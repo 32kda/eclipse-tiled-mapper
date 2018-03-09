@@ -23,7 +23,7 @@ public class Game {
 	private int curUnit = 0;
 	private java.util.Map<UnitSide, ITurnController> sideTurnControllers = new HashMap<>();
 	
-	private IRewardCalculator rewardCalculator = new BasicRewardCalculator();
+	private QProcessor qProcessor = new QProcessor();
 	
 	
 	public Game(Map gameMap) {
@@ -98,8 +98,7 @@ public class Game {
 			if (!targetUnit.isAlive()) {
 				units.remove(unit);
 			}
-			unit.addReward(rewardCalculator.getAttackerReward(unit,targetUnit, damage));
-			targetUnit.addReward(rewardCalculator.getTargetReward(unit,targetUnit, damage));
+			qProcessor.registerRewards(action);
 		}
 	}
 	
@@ -241,12 +240,16 @@ public class Game {
 		return vonSide;
 	}
 
-	public IRewardCalculator getRewardCalculator() {
-		return rewardCalculator;
+	public Unit getUnit(int x, int y) {
+		return cells[y][x].getUnit();
 	}
 
-	public void setRewardCalculator(IRewardCalculator rewardCalculator) {
-		this.rewardCalculator = rewardCalculator;
+	public QProcessor getQProcessor() {
+		return qProcessor;
+	}
+
+	public void setQProcessor(QProcessor qProcessor) {
+		this.qProcessor = qProcessor;
 	}
 	
 }

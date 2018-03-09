@@ -4,11 +4,11 @@ public class GameStateDTO {
 	
 	private boolean[][] obstacles;
 	private UnitActionDTO unitAction;
-	private UnitDTO[] units;
+	private UnitDTO[][] units;
 	
-	public GameStateDTO(boolean[][] obstacles, UnitDTO[] units, UnitActionDTO unitAction) {
+	public GameStateDTO(boolean[][] obstacles, UnitDTO[][] unitDTOs, UnitActionDTO unitAction) {
 		this.obstacles = obstacles;
-		this.units = units;
+		this.units = unitDTOs;
 		this.unitAction = unitAction;
 	}
 	
