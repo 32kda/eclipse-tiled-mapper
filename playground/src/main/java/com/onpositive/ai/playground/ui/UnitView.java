@@ -52,10 +52,11 @@ public class UnitView {
 		int imgX = position.x * tileWidth;
 		int imgY = (position.y + 1) * tileHeight - image.getHeight(null);
 		g2d.drawImage(image, imgX, imgY, null);
-		double ratio = unit.getHealth() * 1.0 / unit.getType().health;
+		double ratio = Math.max(0, unit.getHealth()) * 1.0 / unit.getType().health;
 		int barHeight = (int) (tileHeight * ratio);
 		g2d.setColor(new Color((int)(255 * (1 - ratio)),(int) (255 * ratio),0));
 		g2d.drawLine((position.x + 1) * tileWidth - 2, imgY + tileHeight - barHeight,(position.x + 1) * tileWidth - 2, imgY + tileHeight);
+		g2d.drawLine((position.x + 1) * tileWidth - 3, imgY + tileHeight - barHeight,(position.x + 1) * tileWidth - 3, imgY + tileHeight);
 	}
 
 }

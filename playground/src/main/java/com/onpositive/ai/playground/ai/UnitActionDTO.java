@@ -1,12 +1,15 @@
 package com.onpositive.ai.playground.ai;
 
+import com.mulesoft.nn.annotions.In;
 import com.onpositive.ai.playground.model.Game;
 import com.onpositive.ai.playground.model.UnitAction;
 
 public class UnitActionDTO {
 	
+	@In
 	private boolean[][] moveTo;
 	
+	@In
 	private boolean[][] attackTarget;
 	
 	public UnitActionDTO(UnitAction unitAction, Game game) {

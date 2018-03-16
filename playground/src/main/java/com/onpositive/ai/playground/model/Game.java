@@ -21,6 +21,7 @@ public class Game {
 	
 	private List<Unit> units = new ArrayList<>();
 	private int curUnit = 0;
+	private int curTurn = 0;
 	private java.util.Map<UnitSide, ITurnController> sideTurnControllers = new HashMap<>();
 	
 	private QProcessor qProcessor = new QProcessor();
@@ -96,7 +97,7 @@ public class Game {
 			int damage = unit.getType().attack;
 			targetUnit.takeDamage(damage);
 			if (!targetUnit.isAlive()) {
-				units.remove(unit);
+				units.remove(targetUnit);
 			}
 			qProcessor.registerRewards(action);
 		}
@@ -127,6 +128,7 @@ public class Game {
 			curUnit++;
 			if (curUnit >= units.size()) {
 				curUnit = 0;
+				curTurn++;
 			}
 			nextTurn();
 		}
@@ -250,6 +252,10 @@ public class Game {
 
 	public void setQProcessor(QProcessor qProcessor) {
 		this.qProcessor = qProcessor;
+	}
+
+	public int getCurrentTurn() {
+		return curTurn;
 	}
 	
 }

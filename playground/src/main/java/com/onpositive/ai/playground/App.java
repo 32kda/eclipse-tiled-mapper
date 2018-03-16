@@ -45,7 +45,7 @@ public class App
 	        JPanel panel = new JPanel(new BorderLayout());
 	        JTextPane infoPane = new JTextPane();
 	        infoPane.setEditable(false);
-	        infoPane.setPreferredSize(new Dimension(100, 480));
+	        infoPane.setPreferredSize(new Dimension(200, 480));
 	        panel.add(infoPane, BorderLayout.LINE_START);
 	        panel.add(gameView, BorderLayout.CENTER);
 	        

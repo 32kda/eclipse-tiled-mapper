@@ -16,6 +16,7 @@ public class UITurnController implements IUITurnController {
 	private Position movePosition;
 	private Unit curUnit;
 	private JTextPane infoPane;
+	private UnitSide wonSide;
 
 	public UITurnController(GameView gameView, JTextPane infoPane) {
 		this.gameView = gameView;
@@ -39,13 +40,36 @@ public class UITurnController implements IUITurnController {
 
 	@Override
 	public void actionPerformed(UnitAction action) {
-		
+		gameView.finishTurn(action);
+		printUnitStats();
+	}
+
+	private void printUnitStats() {
+		List<Unit> units = gameView.getGame().getUnits();
+		String str = units.stream().sorted((u1,u2) -> u1.getSide().ordinal() - u2.getSide().ordinal()).map(unit -> getString(unit)).collect(Collectors.joining("\n"));
+		String txt = "Turn: " + gameView.getGame().getCurrentTurn() + "\n" + str;
+		if (wonSide != null) {
+			txt += "\n " + wonSide + " won";
+		}
+		infoPane.setText(txt);
+	}
+
+	private String getString(Unit unit) {
+		StringBuilder builder = new StringBuilder(); 
+		builder.append(unit.getSide() == UnitSide.LEFT ? "L " : "R ");
+		builder.append(unit.getType());
+		builder.append(" reward: ");
+		builder.append(unit.getReward());
+		builder.append(" HP: ");
+		builder.append(unit.getHealth());
+		builder.append("/");
+		builder.append(unit.getType().health);
+		return builder.toString();
 	}
 
 	@Override
 	public void gameFinished(UnitSide side) {
-		// TODO Auto-generated method stub
-		
+		this.wonSide = side;
 	}
 
 	@Override
@@ -63,14 +87,22 @@ public class UITurnController implements IUITurnController {
 	public void targetSelected(Unit unit) {
 		if (curUnit != null) {
 			if (movePosition != null && unit == null) { //Move without attack
-				gameView.finishTurn(new UnitAction(curUnit, movePosition, unit));
+				checkAcceptTarget(unit);
 			} else {
 				if (movePosition == null) {
 					movePosition = curUnit.getPosition(); //Attack without move
 				}
-				gameView.finishTurn(new UnitAction(curUnit, movePosition, unit));
+				checkAcceptTarget(unit);
 			}
 			movePosition = null;
+		}
+	}
+	
+	public void checkAcceptTarget(Unit unit) {
+		List<Unit> attackableUnits = gameView.getGame().getAttackableUnits(curUnit,movePosition);
+		if (unit == null || attackableUnits.contains(unit)) {
+			UnitAction action = new UnitAction(curUnit, movePosition, unit);
+			gameView.getGame().finishTurn(action);
 		}
 	}
 

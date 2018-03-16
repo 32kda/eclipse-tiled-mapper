@@ -14,6 +14,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -192,7 +193,7 @@ public class GameView extends JPanel implements Scrollable
 					Position currentPos = new Position(tileX, tileY);
 					if (e.getButton() == MouseEvent.BUTTON1) {
 						if (reachableCells.contains(currentPos)) {
-							fireCellSelected(currentPos);
+							fireCellSelected(currentPos, false);
 						}
 					}
 					if (e.getButton() == MouseEvent.BUTTON3) {
@@ -205,7 +206,7 @@ public class GameView extends JPanel implements Scrollable
 							}
 						}
 						if (!targetFound && reachableCells.contains(currentPos)) {
-							fireCellSelected(currentPos);
+							fireCellSelected(currentPos, true);
 						}
 					}
 				}
@@ -234,11 +235,11 @@ public class GameView extends JPanel implements Scrollable
 		}
 	}
 
-	protected void fireCellSelected(Position currentPos) {
+	protected void fireCellSelected(Position currentPos, boolean rightClick) {
 		IUITurnController controller = turnControllers.get(curUnit.getSide());
 		if (controller != null) {
 			controller.cellSelected(currentPos);
-			if (attackableUnits.isEmpty()) {
+			if (attackableUnits.isEmpty() || rightClick) {
 				controller.targetSelected(null);
 			}
 		}
@@ -273,7 +274,13 @@ public class GameView extends JPanel implements Scrollable
 		attackableUnits = null;
 		selectedMovePosition = null;
 		setCurUnit(null);
-		game.finishTurn(action);
+		List<Unit> units = game.getUnits();
+		for (Iterator<UnitView> iterator = unitViews.iterator(); iterator.hasNext();) {
+			UnitView unitView = iterator.next();
+			if (!units.contains(unitView.getUnit())) {
+				iterator.remove();
+			}
+		}
 		refresh();
 	}
 

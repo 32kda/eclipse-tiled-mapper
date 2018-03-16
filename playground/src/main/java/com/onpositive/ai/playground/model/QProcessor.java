@@ -1,10 +1,7 @@
 package com.onpositive.ai.playground.model;
 
 import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 
 public class QProcessor {
@@ -13,19 +10,25 @@ public class QProcessor {
 	IRewardCalculator rewardCalculator = new BasicRewardCalculator();
 	
 	private double discountFactor = 0.5; //Discount factor for future reward (see 'Bellman Equation')
-	private double rewardEpsilon = 0.02; //A lowest value of future reward we need to still take into account
 
 	public QProcessor() {
 	}
 	
-	
-	
-	public QProcessor(double discountFactor, double rewardEpsilon) {
+	public QProcessor(double discountFactor) {
 		this.discountFactor = discountFactor;
-		this.rewardEpsilon = rewardEpsilon;
 	}
-
-
+	
+	public double[] getActualQs(Unit unit, int maxStepsBack) {
+		List<Integer> rewards = unitRewards.get(unit);
+		int minI = maxStepsBack == 0 ? 0 : (int) Math.max(0, rewards.size() - maxStepsBack);
+		double curReward = 0;
+		double[] result = new double[rewards.size() - minI];
+		for (int i = rewards.size() - 1; i >= minI; i--) {
+			curReward = rewards.get(i) + discountFactor * curReward;
+			result[i-minI] = curReward;
+		}
+		return result;
+	}
 
 	public void registerRewards(UnitAction action) {
 		int attackerReward = rewardCalculator.getAttackerReward(action);
@@ -39,7 +42,7 @@ public class QProcessor {
 			List<Integer> values = unitRewards.get(action.attackTarget);
 			if (values == null || values.isEmpty()) {
 				unitRewards.put(action.attackTarget, targetReward);
-			} else {
+			} else { //For target - this reward should be added to previous step reward, as far as most likely it was a result of previous move
 				values.set(values.size() - 1, values.get(values.size() - 1).intValue() + targetReward);
 			}
 		}
