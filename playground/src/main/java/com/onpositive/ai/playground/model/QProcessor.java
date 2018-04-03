@@ -7,14 +7,16 @@ import com.google.common.collect.ListMultimap;
 public class QProcessor {
 	
 	ListMultimap<Unit,Integer> unitRewards = ArrayListMultimap.create();
-	IRewardCalculator rewardCalculator = new BasicRewardCalculator();
+	IRewardCalculator rewardCalculator;
 	
 	private double discountFactor = 0.5; //Discount factor for future reward (see 'Bellman Equation')
 
-	public QProcessor() {
+	public QProcessor(IRewardCalculator rewardCalculator) {
+		this.rewardCalculator = rewardCalculator;
 	}
 	
-	public QProcessor(double discountFactor) {
+	public QProcessor(IRewardCalculator rewardCalculator, double discountFactor) {
+		this(rewardCalculator);
 		this.discountFactor = discountFactor;
 	}
 	

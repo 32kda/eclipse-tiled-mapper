@@ -6,4 +6,6 @@ public interface IRewardCalculator {
 
 	public int getTargetReward(UnitAction action);
 	
+	public UnitSide getWonSide(Game game);
+	
 }

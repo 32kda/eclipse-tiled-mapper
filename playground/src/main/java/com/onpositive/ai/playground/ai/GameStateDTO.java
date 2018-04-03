@@ -24,6 +24,9 @@ public class GameStateDTO {
 	public double getQValue() {
 		return qValue;
 	}
-	
+
+	public void setQValue(double qValue) {
+		this.qValue = qValue;
+	}
 	
 }

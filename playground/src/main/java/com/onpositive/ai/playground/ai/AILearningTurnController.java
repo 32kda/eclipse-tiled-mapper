@@ -2,6 +2,7 @@ package com.onpositive.ai.playground.ai;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -87,9 +88,17 @@ public class AILearningTurnController implements ITurnController {
 			if (actualQs.length != actions.size()) {
 				throw new IllegalStateException("Actual Q values array size (" + actualQs.length + ") does not match remembered actions count (" + actions.size() + ")");
 			}
+			int i = 0;
+			for (GameStateDTO action : actions) {
+				action.setQValue(actualQs[i++]);
+			}
 		});
 //		trainableModel.fit() //TODO
 
+	}
+	
+	public Collection<GameStateDTO> getAllActions(){
+		return Collections.unmodifiableCollection(rememberedActions.values());
 	}
 
 }
