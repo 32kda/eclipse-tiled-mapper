@@ -1,6 +1,7 @@
 package com.onpositive.ai.playground.ui;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.swing.JTextPane;
@@ -17,6 +18,7 @@ public class UITurnController implements IUITurnController {
 	private Unit curUnit;
 	private JTextPane infoPane;
 	private UnitSide wonSide;
+	private Consumer<UnitAction> callback;
 
 	public UITurnController(GameView gameView, JTextPane infoPane) {
 		this.gameView = gameView;
@@ -24,8 +26,9 @@ public class UITurnController implements IUITurnController {
 	}
 
 	@Override
-	public void requestAction(Unit unit) {
+	public void requestAction(Unit unit, Consumer<UnitAction> callback) {
 		this.curUnit = unit;
+		this.callback = callback;
 		List<Position> reachableCells = gameView.getGame().getReachableCells(unit);
 		gameView.setCurUnit(unit);
 		gameView.setReachableCells(reachableCells);
@@ -102,7 +105,7 @@ public class UITurnController implements IUITurnController {
 		List<Unit> attackableUnits = gameView.getGame().getAttackableUnits(curUnit,movePosition);
 		if (unit == null || attackableUnits.contains(unit)) {
 			UnitAction action = new UnitAction(curUnit, movePosition, unit);
-			gameView.getGame().finishTurn(action);
+			callback.accept(action);
 		}
 	}
 
@@ -117,5 +120,6 @@ public class UITurnController implements IUITurnController {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

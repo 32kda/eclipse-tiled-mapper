@@ -100,8 +100,8 @@ public class Game {
 			if (!targetUnit.isAlive()) {
 				units.remove(targetUnit);
 			}
-			qProcessor.registerRewards(action);
 		}
+		qProcessor.registerRewards(action);
 	}
 	
 	public void addUnit(Unit unit) {
@@ -116,7 +116,7 @@ public class Game {
 	public void nextTurn() {
 		Unit unit = units.get(curUnit);
 		ITurnController controller = sideTurnControllers.get(unit.getSide());
-		controller.requestAction(unit);
+		controller.requestAction(unit, action -> finishTurn(action));
 	}
 	
 	public void finishTurn(UnitAction action) {
@@ -131,7 +131,6 @@ public class Game {
 				curUnit = 0;
 				curTurn++;
 			}
-			nextTurn();
 		}
 	}
 

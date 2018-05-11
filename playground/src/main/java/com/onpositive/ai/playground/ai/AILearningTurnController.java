@@ -3,8 +3,11 @@ package com.onpositive.ai.playground.ai;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -28,19 +31,20 @@ public class AILearningTurnController implements ITurnController {
 	private double minExplorationRatio = 0.01;
 	
 	private Game game;
-	private DTOFactory factory = new DTOFactory(game);
+	private DTOFactory factory;
 
 	private int currentTurn = 0;
 	private Multimap<Unit, GameStateDTO> rememberedActions = ArrayListMultimap.create();
 
 	public AILearningTurnController(Game game) {
 		this.game = game;
+		factory = new DTOFactory(game);
 	}
 
 	@Override
-	public void requestAction(Unit unit) {
+	public void requestAction(Unit unit, Consumer<UnitAction> callback) {
 		List<UnitAction> possibleActions = new ArrayList<>();
-		List<Position> reachableCells = game.getReachableCells(unit);
+		Set<Position> reachableCells = new HashSet<>(game.getReachableCells(unit));
 		for (Position position : reachableCells) {
 			possibleActions.add(new UnitAction(unit,position,null));
 			List<Unit> attackableUnits = game.getAttackableUnits(unit,position);
@@ -50,7 +54,7 @@ public class AILearningTurnController implements ITurnController {
 		}
 
 		UnitAction action = chooseAndRememberAction(unit,possibleActions);
-		game.finishTurn(action);
+		callback.accept(action);
 	}
 
 	private UnitAction chooseAndRememberAction(Unit unit, List<UnitAction> possibleActions) {
@@ -58,7 +62,7 @@ public class AILearningTurnController implements ITurnController {
 		double dice = random.nextDouble();
 		UnitAction action = null;
 		GameStateDTO gameStateDTO = null;
-		if (dice < explorationRatio) {
+		if (dice < explorationRatio || trainableModel == null) {
 			int randomChoice = random.nextInt(stateDTOs.size());
 			action = possibleActions.get(randomChoice);
 			gameStateDTO = stateDTOs.get(randomChoice);
@@ -99,6 +103,10 @@ public class AILearningTurnController implements ITurnController {
 	
 	public Collection<GameStateDTO> getAllActions(){
 		return Collections.unmodifiableCollection(rememberedActions.values());
+	}
+
+	public void setModel(ITrainableModel<GameStateDTO> trainableModel) {
+		this.trainableModel = trainableModel;
 	}
 
 }

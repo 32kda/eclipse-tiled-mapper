@@ -33,7 +33,7 @@ public class QProcessor {
 	}
 
 	public void registerRewards(UnitAction action) {
-		int attackerReward = rewardCalculator.getAttackerReward(action);
+		int attackerReward = rewardCalculator.getOwnReward(action);
 		int targetReward = rewardCalculator.getTargetReward(action);
 		
 		action.unit.addReward(attackerReward);

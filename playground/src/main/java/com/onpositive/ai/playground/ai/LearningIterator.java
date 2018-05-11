@@ -13,7 +13,7 @@ public class LearningIterator<E> implements Iterator<E> {
 
 	@Override
 	public boolean hasNext() { 
-		if (!nextBatchIterator.hasNext()) {
+		if (nextBatchIterator == null ||  !nextBatchIterator.hasNext()) {
 			nextBatchIterator = obtainNextIterator();
 		}
 		return true;
@@ -25,7 +25,7 @@ public class LearningIterator<E> implements Iterator<E> {
 
 	@Override
 	public E next() {
-		if (!nextBatchIterator.hasNext()) {
+		if (nextBatchIterator == null || !nextBatchIterator.hasNext()) {
 			nextBatchIterator = obtainNextIterator();
 		}
 		return nextBatchIterator.next();

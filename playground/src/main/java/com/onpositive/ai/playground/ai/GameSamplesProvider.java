@@ -2,6 +2,7 @@ package com.onpositive.ai.playground.ai;
 
 import java.util.Collection;
 
+import com.mulesoft.nn.api.ITrainableModel;
 import com.onpositive.ai.playground.model.Game;
 import com.onpositive.ai.playground.model.Position;
 import com.onpositive.ai.playground.model.Unit;
@@ -23,6 +24,7 @@ public class GameSamplesProvider implements ISamplesProvider<GameStateDTO> {
 			System.out.println(currentMap.toString() + " loaded");
 
 			game = new Game(currentMap);
+			game.setRewardCalculator(new SampleRewardCalculator());
 			addUnits(game);
 			turnController = new AILearningTurnController(game);
 			game.setSideTurnController(UnitSide.LEFT, turnController);
@@ -47,6 +49,10 @@ public class GameSamplesProvider implements ISamplesProvider<GameStateDTO> {
 
 		game.addUnit(new Unit(UnitType.WARRIOR,UnitSide.LEFT, new Position(leftCol,row)));
 		
+	}
+
+	public void setModel(ITrainableModel<GameStateDTO> trainableModel) {
+		turnController.setModel(trainableModel);
 	}
 
 }

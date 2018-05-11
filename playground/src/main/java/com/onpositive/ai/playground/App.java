@@ -58,7 +58,9 @@ public class App
 	        appFrame.setContentPane(panel);
 	        appFrame.pack();
 	        appFrame.setVisible(true);
-	        game.nextTurn();
+	        while (!game.isGameFinished()) {
+	        	game.nextTurn();
+	        }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
